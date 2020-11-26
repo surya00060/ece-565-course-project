@@ -72,7 +72,7 @@ gcc_dir = '403.gcc/'
 gcc.executable =  bench_dir+gcc_dir+\
     '/exe/gcc_base.amd64-armcross'
 data=bench_dir+gcc_dir+'/data/ref/input/166.i'
-output=output_dir+'/gcc/166.s'
+output='166.s'
 gcc.cmd = [gcc.executable] + [data]+['-o',output] + ['-quiet'] \
 + ['-funroll-loops'] + ['-fforce-mem'] + ['-fcse-follow-jumps'] \
 + ['-fcse-skip-blocks'] + ['-fexpensive-optimizations'] \
