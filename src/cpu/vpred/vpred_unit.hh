@@ -18,12 +18,12 @@ class VPredUnit : public SimObject
     
     VPredUnit(const Params *p);
 
-    void regStats() override;
+    //void regStats() override;
 
     /*
     * Predicts whether to do VP and returns the predicted value by reference. 
     */
-    bool predict(const StaticInstPtr &inst, RegVal &value, ThreadID tid);
+    bool lookup(ThreadID tid, Addr inst_addr, RegVal &value);
 
     /**
      */

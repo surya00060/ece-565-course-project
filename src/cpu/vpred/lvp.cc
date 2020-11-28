@@ -8,12 +8,11 @@
 LVP::LVP(const LVPParams *params)
     : SimObject(params),
       lastPredictorSize(params->lastPredictorSize),
-      lastCtrBits(params->lastCtrBits),
-      classificationTable(lastPredictorSize, SatCounter(lastCtrBits)),
-      valuePredictionTable(lastPredictorSize)
+      lastCtrBits(params->lastCtrBits);
 {
     // valuePredictionTable.resize(lastPredictorSize);
 }
+
 
 void 
 LVP::regStats()
@@ -34,6 +33,10 @@ LVP::regStats()
         .desc("Number of incorrect value predictions")
         ;
 }
+
+
+
+
 bool
 LVP::lookup(ThreadID tid, Addr inst_addr, RegVal &value)
 {
