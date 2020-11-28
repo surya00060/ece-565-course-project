@@ -47,6 +47,7 @@
 #include "config/the_isa.hh"
 #include "cpu/pc_event.hh"
 #include "cpu/pred/bpred_unit.hh"
+#include "cpu/vpred/vpred_unit.hh"
 #include "cpu/timebuf.hh"
 #include "cpu/translation.hh"
 #include "enums/FetchPolicy.hh"
@@ -302,6 +303,11 @@ class DefaultFetch
      */
     bool lookupAndUpdateNextPC(const DynInstPtr &inst, TheISA::PCState &pc);
 
+    /*
+     * Function to Call Value Predictor 
+     */
+    bool doValuePrediction(const DynInstPtr &inst);
+
     /**
      * Fetches the cache line that contains the fetch PC.  Returns any
      * fault that happened.  Puts the data into the class variable
@@ -431,6 +437,9 @@ class DefaultFetch
 
     /** BPredUnit. */
     BPredUnit *branchPred;
+
+    /*VPredUnit*/
+    VPredUnit *valuePred;
 
     TheISA::PCState pc[Impl::MaxThreads];
 

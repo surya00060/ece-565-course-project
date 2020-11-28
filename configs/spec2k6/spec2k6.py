@@ -71,8 +71,8 @@ gcc = Process()
 gcc_dir = '403.gcc/'
 gcc.executable =  bench_dir+gcc_dir+\
     '/exe/gcc_base.amd64-armcross'
-data=bench_dir+'/data/ref/input/166.i'
-output=output_dir+'/gcc/166.s'
+data=bench_dir+gcc_dir+'/data/ref/input/166.i'
+output='166.s'
 gcc.cmd = [gcc.executable] + [data]+['-o',output] + ['-quiet'] \
 + ['-funroll-loops'] + ['-fforce-mem'] + ['-fcse-follow-jumps'] \
 + ['-fcse-skip-blocks'] + ['-fexpensive-optimizations'] \
@@ -205,7 +205,7 @@ calculix.output = 'beampic.log'
 
 #456.hmmer
 hmmer=Process()
-hmmr_dir = '456.hmmr/'
+hmmr_dir = '456.hmmer/'
 hmmer.executable = bench_dir+hmmr_dir+\
     '/exe/hmmer_base.amd64-armcross'
 data=bench_dir+hmmr_dir+'/data/ref/input/nph3.hmm'
@@ -242,7 +242,7 @@ libquantum.output = 'ref.out'
 h264ref=Process()
 h264_dir = '464.h264ref/'
 h264ref.executable = bench_dir+h264_dir+\
-    '/exe/h264_base.amd64-armcross'
+    '/exe/h264ref_base.amd64-armcross'
 data=bench_dir+h264_dir+'/data/ref/input/foreman_ref_encoder_baseline.cfg'
 h264ref.cmd = [h264ref.executable]+['-d',data]
 h264ref.output = 'foreman_ref_encoder_baseline.out'

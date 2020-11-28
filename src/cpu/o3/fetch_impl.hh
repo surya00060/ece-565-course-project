@@ -80,6 +80,7 @@ DefaultFetch<Impl>::DefaultFetch(O3CPU *_cpu, DerivO3CPUParams *params)
     : fetchPolicy(params->smtFetchPolicy),
       cpu(_cpu),
       branchPred(nullptr),
+      valuePred(nullptr),
       decodeToFetchDelay(params->decodeToFetchDelay),
       renameToFetchDelay(params->renameToFetchDelay),
       iewToFetchDelay(params->iewToFetchDelay),
@@ -136,6 +137,7 @@ DefaultFetch<Impl>::DefaultFetch(O3CPU *_cpu, DerivO3CPUParams *params)
     }
 
     branchPred = params->branchPred;
+    valuePred  = params->valuePred;
 
     for (ThreadID tid = 0; tid < numThreads; tid++) {
         decoder[tid] = new TheISA::Decoder(
@@ -594,6 +596,30 @@ DefaultFetch<Impl>::lookupAndUpdateNextPC(
     }
 
     return predict_taken;
+}
+
+template <class Impl>
+void
+DefaultFetch<Impl>::doValuePrediction(const DynInstPtr &inst)
+{
+    // Do a Value Prediction check here.
+    bool predict_value = false;
+    RegVal value;
+
+    if (inst->numIntDestRegs() == 1)
+    {
+        predict_value = valuePred->predict(inst->staticInst, value);
+    }
+
+    // Predictor makes a succesful prediction.
+    if (predict_value)
+    {
+        const RegId& reg = inst->destRegIdx(0);
+        inst->setIntRegOperand(inst->staticInst, reg.index(), value);
+    }
+    inst->setValuePredicted(predict_value, value);
+
+    return predict_value;
 }
 
 template <class Impl>
@@ -1347,6 +1373,8 @@ DefaultFetch<Impl>::fetch(bool &status_change)
             if (predictedBranch) {
                 DPRINTF(Fetch, "Branch detected with PC = %s\n", thisPC);
             }
+
+            doValuePrediction(instruction);
 
             newMacro |= thisPC.instAddr() != nextPC.instAddr();
 
