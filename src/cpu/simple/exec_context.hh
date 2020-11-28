@@ -76,6 +76,8 @@ class SimpleExecContext : public ExecContext {
 
         // Number of registers predicted
     Counter numreglocal;
+    Stats::Scalar numreglocals;
+    Stats::Scalar numreglocals_total;
 
     // Number of simulated instructions
     Counter numInst;
@@ -176,7 +178,7 @@ class SimpleExecContext : public ExecContext {
 
     /** Reads an integer register. */
     RegVal
-    readIntRegOperand(StaticInst *si, int idx) override
+    readIntRegOperand(const StaticInst *si, int idx) override
     {
         numIntRegReads++;
         const RegId& reg = si->srcRegIdx(idx);

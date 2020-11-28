@@ -78,6 +78,8 @@
 #include "sim/stats.hh"
 #include "sim/system.hh"
 
+#include <iostream>
+
 using namespace std;
 using namespace TheISA;
 
@@ -118,7 +120,11 @@ BaseSimpleCPU::BaseSimpleCPU(BaseSimpleCPUParams *p)
         checker = NULL;
     }
 
-    
+   reg_table.reserve(table_size);
+
+   for (int i=0;i<table_size; i++){
+       reg_table[i]=0;
+   } 
 
 }
 
@@ -229,6 +235,17 @@ BaseSimpleCPU::regStats()
         t_info.numInsts
             .name(thread_str + ".committedInsts")
             .desc("Number of hello instructions committed")
+            ;
+
+
+        t_info.numreglocals
+            .name(thread_str + ".corrpredreg")
+            .desc("Number of register values predicted correctly")
+            ;
+
+        t_info.numreglocals_total
+            .name(thread_str + ".totalpredreg")
+            .desc("Number of register values totally predicted")
             ;
 
 
@@ -568,10 +585,7 @@ BaseSimpleCPU::postExecute()
     SimpleThread* thread = t_info.thread;
 
     assert(curStaticInst);
-
-
-
-
+  
     TheISA::PCState pc = threadContexts[curThread]->pcState();
     Addr instAddr = pc.instAddr();
 
@@ -579,30 +593,39 @@ BaseSimpleCPU::postExecute()
     // int8_t num=curStaticInst.numDestRegs();
     //readMiscRegOperand(const StaticInst *si, int idx);
    
+    t_info.numreglocals_total++;
 
+
+    if (curStaticInst->numDestRegs()>0){
 
     RegVal value;
 
 
     int index=instAddr%table_size;
+    //cout<<"index "<<index<<"\n";
 
     const RegId dest=curStaticInst->destRegIdx(0);
+    
+    const RegIndex dest_id=dest.index();
+    //cout<<"dest_id "<<dest_id<<"\n";
 
-    const RegIndex dest_id=dest.elemIndex();
+    if (dest_id<=32){
+    value=thread->readIntReg(dest_id);
 
-    value=t_info.readIntRegOperand(*curStaticInst,dest_id);
+    //cout<<"value "<<value<<"\n";
 
     if (value==reg_table[index])
-        t_info.numreglocal++;
+        t_info.numreglocals++;
 
     reg_table[index]=value;
+
+    }
+
+
+    }
+
+
   
-
-
-
-
-
-
 
     if (FullSystem && thread->profile) {
         bool usermode = TheISA::inUserMode(threadContexts[curThread]);
