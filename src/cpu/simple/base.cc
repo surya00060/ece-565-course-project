@@ -593,7 +593,7 @@ BaseSimpleCPU::postExecute()
     // int8_t num=curStaticInst.numDestRegs();
     //readMiscRegOperand(const StaticInst *si, int idx);
    
-    t_info.numreglocals_total++;
+    
 
 
     if (curStaticInst->numDestRegs()>0){
@@ -610,6 +610,8 @@ BaseSimpleCPU::postExecute()
     //cout<<"dest_id "<<dest_id<<"\n";
 
     if (dest_id<=32){
+        
+    t_info.numreglocals_total++;
     value=thread->readIntReg(dest_id);
 
     //cout<<"value "<<value<<"\n";
