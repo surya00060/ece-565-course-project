@@ -547,6 +547,27 @@ DefaultIEW<Impl>::squashDueToMemOrder(const DynInstPtr& inst, ThreadID tid)
 
 template<class Impl>
 void
+DefaultIEW<Impl>::squashDueToValuePred(const DynInstPtr& inst, ThreadID tid)
+{
+    DPRINTF(IEW, "[tid:%i] [sn:%llu] Squashing from a specific instruction,"
+            " PC: %s "
+            "\n", tid, inst->seqNum, inst->pcState() );
+
+    if (!toCommit->squash[tid] ||
+            inst->seqNum < toCommit->squashedSeqNum[tid]) {
+        toCommit->squash[tid] = true;
+        toCommit->squashedSeqNum[tid] = inst->seqNum;
+        toCommit->pc[tid] = inst->pcState();
+        toCommit->mispredictInst[tid] = NULL;
+        /*Need not Squash Wrongly Predicted Value*/
+        toCommit->includeSquashInst[tid] = false;
+
+        wroteToTimeBuffer = true;
+    }
+}
+
+template<class Impl>
+void
 DefaultIEW<Impl>::block(ThreadID tid)
 {
     DPRINTF(IEW, "[tid:%i] Blocking.\n", tid);
@@ -1363,8 +1384,20 @@ DefaultIEW<Impl>::executeInsts()
             // Prevent testing for misprediction on load instructions,
             // that have not been executed.
             bool loadNotExecuted = !inst->isExecuted() && inst->isLoad();
+            if (inst->isExecuted() && inst->isValuePredicted())
+            {
+                RegVal predictedValue = inst->getValuePredicted();
+                RegVal trueValue = inst->popResult();
 
-            if (inst->mispredicted() && !loadNotExecuted) {
+                if (trueValue != predictedValue)
+                {
+                    squashDueToValuePred(inst, tid);    
+                }
+                /*
+                Do VP updates here. Need to figure out how to do that.
+                */
+            }
+            else if (inst->mispredicted() && !loadNotExecuted) {
                 fetchRedirect[tid] = true;
 
                 DPRINTF(IEW, "[tid:%i] [sn:%llu] Execute: "
@@ -1540,6 +1573,22 @@ DefaultIEW<Impl>::tick()
         // Also should advance its own time buffers if the stage ran.
         // Not the best place for it, but this works (hopefully).
         issueToExecQueue.advance();
+        for (int i = 0; i < issueToExecQueue.getSize(); ++i)
+        {
+            DynInstPtr inst = issueToExecQueue->insts[i];
+            if (inst->isValuePredicted())
+            {
+                int dependents = instQueue.wakeDependents(inst);
+                for (int i = 0; i < inst->numDestRegs(); i++)
+                {
+                    // Mark register as ready if not pinned
+                    if (inst->renamedDestRegIdx(i)->getNumPinnedWritesToComplete() == 0) 
+                    {
+                        scoreboard->setReg(inst->renamedDestRegIdx(i));
+                    }    
+                }
+            }
+        }
     }
 
     bool broadcast_free_entries = false;
