@@ -1,0 +1,8 @@
+Import('*')
+
+if env['TARGET_ISA'] == 'null':
+    Return()
+
+SimObject('ValuePredictor.py')
+
+Source('lvp.cc')
