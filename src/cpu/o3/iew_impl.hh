@@ -570,6 +570,8 @@ DefaultIEW<Impl>::doValuePrediction(const DynInstPtr &inst)
         //const RegId& reg = inst->destRegIdx(0);
 	PhysRegIdPtr reg = inst->renamedDestRegIdx(0);
         inst->cpu->setIntReg(reg, value);
+	instQueue.wakeDependents(inst);
+	scoreboard->setReg(inst->renamedDestRegIdx(0));
     }
     inst->setValuePredicted(predict_value, value);
 }
@@ -1615,10 +1617,12 @@ DefaultIEW<Impl>::tick()
         // Also should advance its own time buffers if the stage ran.
         // Not the best place for it, but this works (hopefully).
         issueToExecQueue.advance();
-        for (int i = 0; i < Impl::MaxWidth; ++i)
+        
+	/*for (int i = 0; i < Impl::MaxWidth; ++i)
         {
-            IssueStruct ieq = issueToExecQueue[0];
-	    DynInstPtr inst = ieq.insts[i];
+            if (issueToExecQueue.getSize() > 0)
+	    {	IssueStruct ieq = issueToExecQueue[0];
+	    	DynInstPtr inst = ieq.insts[i];
             if (inst->isValuePredicted())
             {
                 instQueue.wakeDependents(inst);
@@ -1631,7 +1635,8 @@ DefaultIEW<Impl>::tick()
                     }    
                 }
             }
-        }
+		}
+        }*/
     }
 
     bool broadcast_free_entries = false;
