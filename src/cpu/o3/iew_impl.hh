@@ -567,8 +567,9 @@ DefaultIEW<Impl>::doValuePrediction(const DynInstPtr &inst)
     // Predictor makes a succesful prediction.
     if (predict_value)
     {
-        const RegId& reg = inst->destRegIdx(0);
-        inst->setIntReg(inst->staticInst, reg.index(), value);
+        //const RegId& reg = inst->destRegIdx(0);
+	PhysRegIdPtr reg = inst->renamedDestRegIdx(0);
+        inst->cpu->setIntReg(reg, value);
     }
     inst->setValuePredicted(predict_value, value);
 }
@@ -1421,7 +1422,8 @@ DefaultIEW<Impl>::executeInsts()
                 RegVal predictedValue = inst->getValuePredicted();
                 
                 // RegVal trueValue = inst->popResult();
-                const RegId& reg = inst->destRegIdx(0);
+                //const RegId& reg = inst->destRegIdx(0);
+		PhysRegIdPtr reg = inst->renamedDestRegIdx(0);
                 RegVal trueValue = inst->cpu->readIntReg(reg);
 
                 bool valueTaken = trueValue == predictedValue;
@@ -1613,9 +1615,10 @@ DefaultIEW<Impl>::tick()
         // Also should advance its own time buffers if the stage ran.
         // Not the best place for it, but this works (hopefully).
         issueToExecQueue.advance();
-        for (int i = 0; i < issueToExecQueue.getSize(); ++i)
+        for (int i = 0; i < Impl::MaxWidth; ++i)
         {
-            DynInstPtr inst = issueToExecQueue->insts[i];
+            IssueStruct ieq = issueToExecQueue[0];
+	    DynInstPtr inst = ieq.insts[i];
             if (inst->isValuePredicted())
             {
                 instQueue.wakeDependents(inst);
