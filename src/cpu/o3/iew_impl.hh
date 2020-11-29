@@ -1412,20 +1412,22 @@ DefaultIEW<Impl>::executeInsts()
             // Prevent testing for misprediction on load instructions,
             // that have not been executed.
             bool loadNotExecuted = !inst->isExecuted() && inst->isLoad();
+            
             if (inst->isExecuted() && inst->isValuePredicted())
             {
                 RegVal predictedValue = inst->getValuePredicted();
                 RegVal trueValue = inst->popResult();
 
-                if (trueValue != predictedValue)
+                bool valueTaken = trueValue == predictedValue;
+                valuePred->update(inst->staticInst, valueTaken, trueValue);
+
+                if (valueTaken==false)
                 {
                     squashDueToValuePred(inst, tid);    
                 }
-                /*
-                Do VP updates here. Need to figure out how to do that.
-                */
             }
-            else if (inst->mispredicted() && !loadNotExecuted) {
+            
+            if (inst->mispredicted() && !loadNotExecuted) {
                 fetchRedirect[tid] = true;
 
                 DPRINTF(IEW, "[tid:%i] [sn:%llu] Execute: "
