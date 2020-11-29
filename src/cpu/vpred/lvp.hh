@@ -11,13 +11,13 @@
 #include "params/LVP.hh"
 #include "sim/sim_object.hh"
 
-class LVP : public SimObject
+class LVP : public VPredUnit
 {
     public:
         
         LVP(const LVPParams *params);
 
-        void regStats() override;
+        void regStats();
 
         bool lookup(ThreadID tid, Addr inst_addr, RegVal &value);
 

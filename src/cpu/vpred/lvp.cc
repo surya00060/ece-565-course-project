@@ -6,9 +6,9 @@
 // #include "debug/Fetch.hh"
 
 LVP::LVP(const LVPParams *params)
-    : SimObject(params),
+    : VPredUnit(params),
       lastPredictorSize(params->lastPredictorSize),
-      lastCtrBits(params->lastCtrBits);
+      lastCtrBits(params->lastCtrBits)
 {
     // valuePredictionTable.resize(lastPredictorSize);
 }

@@ -1,6 +1,6 @@
+#include "cpu/vpred/vpred_unit.hh"
 
 #include <vector>
-
 #include "base/sat_counter.hh"
 #include "base/types.hh"
 #include "cpu/inst_seq.hh"
@@ -9,7 +9,7 @@
 #include "sim/sim_object.hh"
 
 VPredUnit::VPredUnit(const Params *params)
-    : SimObject(params);
+    : SimObject (params)
 
 {
 

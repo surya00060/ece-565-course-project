@@ -5,7 +5,7 @@ from m5.proxy import *
 class ValuePredictor(SimObject):
     type = 'ValuePredictor'
     cxx_class = 'VPredUnit'
-    cxx_header = "cpu/pred/vpred_unit.hh"
+    cxx_header = "cpu/vpred/vpred_unit.hh"
     abstract = True 
 
     #numThreads = Param.Unsigned(Parent.numThreads, "Number of threads")
