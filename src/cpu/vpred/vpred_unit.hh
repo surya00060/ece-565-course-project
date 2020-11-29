@@ -9,7 +9,8 @@
 #include "cpu/static_inst.hh"
 #include "sim/probe/pmu.hh"
 #include "sim/sim_object.hh"
-
+#include "sim/stats.hh"
+#include "params/ValuePredictor.hh"
 
 class VPredUnit : public SimObject
 {
@@ -18,16 +19,29 @@ class VPredUnit : public SimObject
     
     VPredUnit(const Params *p);
 
-    //void regStats() override;
+    void regStats() override;
 
     /*
     * Predicts whether to do VP and returns the predicted value by reference. 
     */
-    bool lookup(ThreadID tid, Addr inst_addr, RegVal &value);
+    bool predict(ThreadID tid, Addr inst_addr, RegVal &value);
+
+    virtual bool lookup(ThreadID tid, Addr inst_addr, RegVal &value) = 0;
+
 
     /**
      */
-    void update(, ThreadID tid);
+    //void update_table(, ThreadID tid);
+    
+    void update_table(ThreadID tid, Addr inst_addr, bool taken, bool squashed, RegVal &value);
+    virtual void update(ThreadID tid, Addr inst_addr, bool taken, bool squashed, RegVal &value) = 0;
+
+    private:
+
+
+        Stats::Scalar lookups;
+        Stats::Scalar numPredicted;
+        Stats::Scalar numIncorrectPredicted;
 
 
 };

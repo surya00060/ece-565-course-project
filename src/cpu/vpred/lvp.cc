@@ -13,34 +13,10 @@ LVP::LVP(const LVPParams *params)
     // valuePredictionTable.resize(lastPredictorSize);
 }
 
-
-void 
-LVP::regStats()
-{
-    SimObject::regStats();
-    lookups
-        .name(name() + ".lookups")
-        .desc("Number of VP lookups")
-        ;
-
-    numPredicted
-        .name(name() + ".numPredicted")
-        .desc("Number of value predictions")
-        ;
-
-    numIncorrectPredicted
-        .name(name() + ".numIncorrectPredicted")
-        .desc("Number of incorrect value predictions")
-        ;
-}
-
-
-
-
 bool
 LVP::lookup(ThreadID tid, Addr inst_addr, RegVal &value)
 {
-    ++lookups;
+    //++lookups;
 
     unsigned index = inst_addr%lastPredictorSize;
 
@@ -51,7 +27,7 @@ LVP::lookup(ThreadID tid, Addr inst_addr, RegVal &value)
 
     if (prediction)
     {
-        ++numPredicted;
+        //++numPredicted;
         value = valuePredictionTable[index];
     }
 
@@ -75,15 +51,15 @@ LVP::update(ThreadID tid, Addr inst_addr, bool taken, bool squashed, RegVal &val
     else
     {
         // Decrease the counter and update the value to prediction table.
-        ++numIncorrectPredicted;
+        //++numIncorrectPredicted;
         classificationTable[index]++;
         valuePredictionTable[index] = value;
     }
 }
 
-// LVP*
-// LVPParams::create()
-// {
-//     return new LVP(this);
-// }
+ LVP*
+ LVPParams::create()
+ {
+     return new LVP(this);
+ }
 

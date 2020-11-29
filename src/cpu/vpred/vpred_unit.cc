@@ -7,6 +7,7 @@
 #include "cpu/static_inst.hh"
 #include "sim/probe/pmu.hh"
 #include "sim/sim_object.hh"
+#include "sim/stats.hh"
 
 VPredUnit::VPredUnit(const Params *params)
     : SimObject (params)
@@ -15,9 +16,6 @@ VPredUnit::VPredUnit(const Params *params)
 
 }
 
-
-
-/*
 void 
 VPredUnit::regStats()
 {
@@ -37,17 +35,33 @@ VPredUnit::regStats()
         .desc("Number of incorrect value predictions")
         ;
 }
-*/
+
 
 bool
-VPredUnit::lookup(ThreadID tid, Addr inst_addr, RegVal &value)
+VPredUnit::predict(ThreadID tid, Addr inst_addr, RegVal &value)
 {
+  ++lookups;
+
+  bool prediction= lookup(tid,inst_addr, value);
+
+  if (prediction){
+      ++numPredicted;
+  }
+
+  return prediction;
 
 }
 
 void
-VPredUnit::update(ThreadID tid, Addr inst_addr, bool taken, bool squashed, RegVal &value)
+VPredUnit::update_table(ThreadID tid, Addr inst_addr, bool taken, bool squashed, RegVal &value)
 {
+
+  update(tid, inst_addr, taken, squashed, value);
+
+  if (!taken){
+    ++numIncorrectPredicted;
+  }
+
 
 }
 

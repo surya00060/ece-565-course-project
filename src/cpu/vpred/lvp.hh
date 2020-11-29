@@ -10,6 +10,7 @@
 #include "cpu/static_inst.hh"
 #include "params/LVP.hh"
 #include "sim/sim_object.hh"
+#include "cpu/vpred/vpred_unit.hh"
 
 class LVP : public VPredUnit
 {
@@ -17,7 +18,7 @@ class LVP : public VPredUnit
         
         LVP(const LVPParams *params);
 
-        void regStats();
+        //void regStats();
 
         bool lookup(ThreadID tid, Addr inst_addr, RegVal &value);
 
@@ -36,9 +37,7 @@ class LVP : public VPredUnit
         /*Array of value predictions*/
         std::vector<RegVal> valuePredictionTable;
 
-        Stats::Scalar lookups;
-        Stats::Scalar numPredicted;
-        Stats::Scalar numIncorrectPredicted;
+
 
 };
 #endif // __CPU_VPRED_LVP_PRED_HH__
