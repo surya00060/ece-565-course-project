@@ -1,6 +1,7 @@
 #ifndef __CPU_VPRED_LVP_PRED_HH__
 #define __CPU_VPRED_LVP_PRED_HH__
 
+#include "cpu/vpred/vpred_unit.hh"
 #include <vector>
 
 #include "base/statistics.hh"
@@ -10,7 +11,7 @@
 #include "cpu/static_inst.hh"
 #include "params/LVP.hh"
 #include "sim/sim_object.hh"
-#include "cpu/vpred/vpred_unit.hh"
+
 
 class LVP : public VPredUnit
 {
@@ -18,11 +19,9 @@ class LVP : public VPredUnit
         
         LVP(const LVPParams *params);
 
-        //void regStats();
+        bool lookup(Addr inst_addr, RegVal &value);
 
-        bool lookup(ThreadID tid, Addr inst_addr, RegVal &value);
-
-        void update(ThreadID tid, Addr inst_addr, bool taken, bool squashed, RegVal &value);
+        void updateTable(Addr inst_addr, bool valueTaken, RegVal &value);
     
     private:
         /** Number of Table Entries*/
@@ -36,8 +35,6 @@ class LVP : public VPredUnit
 
         /*Array of value predictions*/
         std::vector<RegVal> valuePredictionTable;
-
-
 
 };
 #endif // __CPU_VPRED_LVP_PRED_HH__
