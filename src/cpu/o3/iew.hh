@@ -51,6 +51,8 @@
 #include "cpu/timebuf.hh"
 #include "debug/IEW.hh"
 #include "sim/probe/probe.hh"
+#include "cpu/vpred/vpred_unit.hh"
+
 
 struct DerivO3CPUParams;
 class FUPool;
@@ -128,6 +130,9 @@ class DefaultIEW
     ProbePointArg<DynInstPtr> *ppExecute;
     /** To probe when instruction execution is complete. */
     ProbePointArg<DynInstPtr> *ppToCommit;
+
+    /*Value Predictor*/
+    VPredUnit *valuePred;
 
   public:
     /** Constructs a DefaultIEW with the given parameters. */
@@ -243,6 +248,15 @@ class DefaultIEW
      * violation.
      */
     void squashDueToMemOrder(const DynInstPtr &inst, ThreadID tid);
+
+    /* Function to Call Value Predictor 
+     */
+    void doValuePrediction(const DynInstPtr &inst);
+
+    /** Sends commit proper information for a squash due to a value
+     * mispredict.
+     */
+    void squashDueToValuePred(const DynInstPtr &inst, ThreadID tid);
 
     /** Sets Dispatch to blocked, and signals back to other stages to block. */
     void block(ThreadID tid);

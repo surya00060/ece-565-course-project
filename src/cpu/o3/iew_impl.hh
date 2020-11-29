@@ -65,6 +65,7 @@ using namespace std;
 template<class Impl>
 DefaultIEW<Impl>::DefaultIEW(O3CPU *_cpu, DerivO3CPUParams *params)
     : issueToExecQueue(params->backComSize, params->forwardComSize),
+      valuePred(nullptr),
       cpu(_cpu),
       instQueue(_cpu, this, params),
       ldstQueue(_cpu, this, params),
@@ -95,6 +96,8 @@ DefaultIEW<Impl>::DefaultIEW(O3CPU *_cpu, DerivO3CPUParams *params)
     _status = Active;
     exeStatus = Running;
     wbStatus = Idle;
+
+    valuePred  = params->valuePred;
 
     // Setup wire to read instructions coming from issue.
     fromIssue = issueToExecQueue.getWire(-issueToExecuteDelay);
@@ -540,6 +543,50 @@ DefaultIEW<Impl>::squashDueToMemOrder(const DynInstPtr& inst, ThreadID tid)
 
         // Must include the memory violator in the squash.
         toCommit->includeSquashInst[tid] = true;
+
+        wroteToTimeBuffer = true;
+    }
+}
+
+template <class Impl>
+void
+DefaultIEW<Impl>::doValuePrediction(const DynInstPtr &inst)
+{
+    // Do a Value Prediction check here.
+    bool predict_value = false;
+    RegVal value;
+
+    if (inst->numIntDestRegs() == 1)
+    {
+        predict_value = valuePred->predict(inst->staticInst, value);
+    }
+
+    // Predictor makes a succesful prediction.
+    if (predict_value)
+    {
+        const RegId& reg = inst->destRegIdx(0);
+        inst->setIntRegOperand(inst->staticInst, reg.index(), value);
+    }
+    inst->setValuePredicted(predict_value, value);
+}
+
+
+template<class Impl>
+void
+DefaultIEW<Impl>::squashDueToValuePred(const DynInstPtr& inst, ThreadID tid)
+{
+    DPRINTF(IEW, "[tid:%i] [sn:%llu] Squashing from a specific instruction,"
+            " PC: %s "
+            "\n", tid, inst->seqNum, inst->pcState() );
+
+    if (!toCommit->squash[tid] ||
+            inst->seqNum < toCommit->squashedSeqNum[tid]) {
+        toCommit->squash[tid] = true;
+        toCommit->squashedSeqNum[tid] = inst->seqNum;
+        toCommit->pc[tid] = inst->pcState();
+        toCommit->mispredictInst[tid] = NULL;
+        /*Need not Squash Wrongly Predicted Value*/
+        toCommit->includeSquashInst[tid] = false;
 
         wroteToTimeBuffer = true;
     }
@@ -1051,6 +1098,8 @@ DefaultIEW<Impl>::dispatchInsts(ThreadID tid)
             break;
         }
 
+        doValuePrediction(inst);
+        
         // Otherwise issue the instruction just fine.
         if (inst->isAtomic()) {
             DPRINTF(IEW, "[tid:%i] Issue: Memory instruction "
@@ -1363,8 +1412,20 @@ DefaultIEW<Impl>::executeInsts()
             // Prevent testing for misprediction on load instructions,
             // that have not been executed.
             bool loadNotExecuted = !inst->isExecuted() && inst->isLoad();
+            if (inst->isExecuted() && inst->isValuePredicted())
+            {
+                RegVal predictedValue = inst->getValuePredicted();
+                RegVal trueValue = inst->popResult();
 
-            if (inst->mispredicted() && !loadNotExecuted) {
+                if (trueValue != predictedValue)
+                {
+                    squashDueToValuePred(inst, tid);    
+                }
+                /*
+                Do VP updates here. Need to figure out how to do that.
+                */
+            }
+            else if (inst->mispredicted() && !loadNotExecuted) {
                 fetchRedirect[tid] = true;
 
                 DPRINTF(IEW, "[tid:%i] [sn:%llu] Execute: "
@@ -1540,6 +1601,22 @@ DefaultIEW<Impl>::tick()
         // Also should advance its own time buffers if the stage ran.
         // Not the best place for it, but this works (hopefully).
         issueToExecQueue.advance();
+        for (int i = 0; i < issueToExecQueue.getSize(); ++i)
+        {
+            DynInstPtr inst = issueToExecQueue->insts[i];
+            if (inst->isValuePredicted())
+            {
+                int dependents = instQueue.wakeDependents(inst);
+                for (int i = 0; i < inst->numDestRegs(); i++)
+                {
+                    // Mark register as ready if not pinned
+                    if (inst->renamedDestRegIdx(i)->getNumPinnedWritesToComplete() == 0) 
+                    {
+                        scoreboard->setReg(inst->renamedDestRegIdx(i));
+                    }    
+                }
+            }
+        }
     }
 
     bool broadcast_free_entries = false;
