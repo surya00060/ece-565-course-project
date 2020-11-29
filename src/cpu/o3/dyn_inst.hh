@@ -99,7 +99,7 @@ class BaseO3DynInst : public BaseDynInst<Impl>
     /** Initializes variables. */
     void initVars();
 
-  protected:
+  public:
     /** Explicitation of dependent names. */
     using BaseDynInst<Impl>::cpu;
     using BaseDynInst<Impl>::_srcRegIdx;
