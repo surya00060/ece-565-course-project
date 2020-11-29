@@ -137,6 +137,7 @@ class BaseDynInst : public ExecContext, public RefCounted
         Predicate,
         MemAccPredicate,
         PredTaken,
+        ValuePredicted,
         IsStrictlyOrdered,
         ReqMade,
         MemOpDone,
@@ -202,6 +203,9 @@ class BaseDynInst : public ExecContext, public RefCounted
 
     /** How many source registers are ready. */
     uint8_t readyRegs;
+
+    /*Predicted Value if successful VP*/
+    RegVal VPPredictedValue;
 
   public:
     /////////////////////// Load Store Data //////////////////////
@@ -486,7 +490,6 @@ class BaseDynInst : public ExecContext, public RefCounted
     {
         instFlags[PredTaken] = predicted_taken;
     }
-
     /** Returns whether the instruction mispredicted. */
     bool mispredicted()
     {
@@ -495,6 +498,24 @@ class BaseDynInst : public ExecContext, public RefCounted
         return !(tempPC == predPC);
     }
 
+    void setValuePredicted(bool predict_value, RegVal value)
+    {
+        instFlags[ValuePredicted] = predict_value;
+        if (predict_value)
+        {
+            VPPredictedValue = value;
+        }
+    }
+
+    bool isValuePredicted()
+    {
+        return instFlags[ValuePredicted];
+    }
+
+    RegVal getValuePredicted()
+    {
+        return VPPredictedValue;
+    }
     //
     //  Instruction types.  Forward checks to StaticInst object.
     //
