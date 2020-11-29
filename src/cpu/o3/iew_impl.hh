@@ -64,8 +64,8 @@ using namespace std;
 
 template<class Impl>
 DefaultIEW<Impl>::DefaultIEW(O3CPU *_cpu, DerivO3CPUParams *params)
-    : issueToExecQueue(params->backComSize, params->forwardComSize),
-      valuePred(nullptr),
+    : valuePred(nullptr),
+      issueToExecQueue(params->backComSize, params->forwardComSize),
       cpu(_cpu),
       instQueue(_cpu, this, params),
       ldstQueue(_cpu, this, params),
