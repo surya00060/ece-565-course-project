@@ -8,16 +8,16 @@
 LVP::LVP(const LVPParams *params)
     : VPredUnit(params),
       lastPredictorSize(params->lastPredictorSize),
-      lastCtrBits(params->lastCtrBits)
+      lastCtrBits(params->lastCtrBits),
+      classificationTable(lastPredictorSize, SatCounter(lastCtrBits)),
+      valuePredictionTable(lastPredictorSize)
 {
     // valuePredictionTable.resize(lastPredictorSize);
 }
 
 bool
-LVP::lookup(ThreadID tid, Addr inst_addr, RegVal &value)
+LVP::lookup(Addr inst_addr, RegVal &value)
 {
-    //++lookups;
-
     unsigned index = inst_addr%lastPredictorSize;
 
     uint8_t counter_val = classificationTable[index];
@@ -27,7 +27,6 @@ LVP::lookup(ThreadID tid, Addr inst_addr, RegVal &value)
 
     if (prediction)
     {
-        //++numPredicted;
         value = valuePredictionTable[index];
     }
 
@@ -35,15 +34,11 @@ LVP::lookup(ThreadID tid, Addr inst_addr, RegVal &value)
 }
 
 void
-LVP::update(ThreadID tid, Addr inst_addr, bool taken, bool squashed, RegVal &value)
+LVP::updateTable(Addr inst_addr, bool valueTaken, RegVal &trueValue)
 {
-    if (squashed)
-    {
-        return;
-    }
     unsigned index = inst_addr%lastPredictorSize;
 
-    if (taken)
+    if (valueTaken)
     {
         // The Value predicted and True values are the same.
         classificationTable[index]++; 
@@ -51,9 +46,8 @@ LVP::update(ThreadID tid, Addr inst_addr, bool taken, bool squashed, RegVal &val
     else
     {
         // Decrease the counter and update the value to prediction table.
-        //++numIncorrectPredicted;
         classificationTable[index]++;
-        valuePredictionTable[index] = value;
+        valuePredictionTable[index] = trueValue;
     }
 }
 

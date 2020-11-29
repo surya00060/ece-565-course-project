@@ -1,19 +1,9 @@
 #include "cpu/vpred/vpred_unit.hh"
 
-#include <vector>
-#include "base/sat_counter.hh"
-#include "base/types.hh"
-#include "cpu/inst_seq.hh"
-#include "cpu/static_inst.hh"
-#include "sim/probe/pmu.hh"
-#include "sim/sim_object.hh"
-#include "sim/stats.hh"
 
 VPredUnit::VPredUnit(const Params *params)
     : SimObject (params)
-
 {
-
 }
 
 void 
@@ -38,31 +28,35 @@ VPredUnit::regStats()
 
 
 bool
-VPredUnit::predict(ThreadID tid, Addr inst_addr, RegVal &value)
+VPredUnit::predict(Addr inst_addr, RegVal &value)
 {
-  ++lookups;
+	++lookups;
 
-  bool prediction= lookup(tid,inst_addr, value);
+	// TheISA::PCState pc = inst->pcState()
+	// Addr inst_addr = pc.instAddr()
 
-  if (prediction){
-      ++numPredicted;
-  }
+	bool prediction= lookup(inst_addr, value);
 
-  return prediction;
-
+	if (prediction)
+	{
+		++numPredicted;
+	}
+	return prediction;
 }
 
 void
-VPredUnit::update_table(ThreadID tid, Addr inst_addr, bool taken, bool squashed, RegVal &value)
+VPredUnit::update(Addr inst_addr, RegVal &trueValue, RegVal &predValue)
 {
+	// TheISA::PCState pc = inst->pcState()
+	// Addr inst_addr = pc.instAddr()
 
-  update(tid, inst_addr, taken, squashed, value);
+	bool valueTaken = trueValue == predValue;
+	updateTable(inst_addr, valueTaken, trueValue);
 
-  if (!taken){
-    ++numIncorrectPredicted;
-  }
-
-
+	if (!valueTaken)
+	{
+		++numIncorrectPredicted;
+	}
 }
 
 
