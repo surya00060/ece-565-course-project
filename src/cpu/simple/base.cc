@@ -609,7 +609,7 @@ BaseSimpleCPU::postExecute()
     const RegIndex dest_id=dest.index();
     //cout<<"dest_id "<<dest_id<<"\n";
 
-    if (dest_id<=32){
+    if (dest_id<32){
         
     t_info.numreglocals_total++;
     value=thread->readIntReg(dest_id);
