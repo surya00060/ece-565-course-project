@@ -556,7 +556,7 @@ DefaultIEW<Impl>::doValuePrediction(const DynInstPtr &inst)
     bool predict_value = false;
     RegVal value;
 
-    if (inst->numIntDestRegs() == 1)
+    if (inst->numIntDestRegs() == 1 && inst->isInteger())
     {
         predict_value = valuePred->predict(inst->staticInst, value);
     }
@@ -565,7 +565,7 @@ DefaultIEW<Impl>::doValuePrediction(const DynInstPtr &inst)
     if (predict_value)
     {
         const RegId& reg = inst->destRegIdx(0);
-        inst->setIntRegOperand(inst->staticInst, reg.index(), value);
+        inst->cpu->setIntReg(inst->staticInst, reg.index(), value);
     }
     inst->setValuePredicted(predict_value, value);
 }
