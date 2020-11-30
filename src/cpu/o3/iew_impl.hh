@@ -639,7 +639,7 @@ template<class Impl>
 void
 DefaultIEW<Impl>::wakeDependents(const DynInstPtr& inst)
 {
-    instQueue.wakeDependents(inst);
+    instQueue.mywakeDependents(inst);
 }
 
 template<class Impl>

@@ -228,6 +228,9 @@ class InstructionQueue
     /** Wakes all dependents of a completed instruction. */
     int wakeDependents(const DynInstPtr &completed_inst);
 
+    /** Custom Wakes all dependents of a speculated instruction. */
+    void mywakeDependents(const DynInstPtr &completed_inst);
+
     /** Adds a ready memory instruction to the ready list. */
     void addReadyMemInst(const DynInstPtr &ready_inst);
 
