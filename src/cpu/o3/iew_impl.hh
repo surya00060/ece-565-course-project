@@ -571,7 +571,7 @@ DefaultIEW<Impl>::doValuePrediction(const DynInstPtr &inst)
 	    PhysRegIdPtr reg = inst->renamedDestRegIdx(0);
         inst->cpu->setIntReg(reg, value);
         // Commenting out this line makes the program work.
-	    instQueue.wakeDependents(inst);
+	    wakeDependents(inst);
 	    scoreboard->setReg(inst->renamedDestRegIdx(0));
     }
     inst->setValuePredicted(predict_value, value);
@@ -1202,6 +1202,7 @@ DefaultIEW<Impl>::dispatchInsts(ThreadID tid)
         // instruction.
         if (add_to_iq) {
             instQueue.insert(inst);
+            //doValuePrediction(inst);
         }
 
         doValuePrediction(inst);
