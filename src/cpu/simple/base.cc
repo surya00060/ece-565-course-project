@@ -602,7 +602,7 @@ BaseSimpleCPU::postExecute()
 
 
     int index=instAddr%table_size;
-    //cout<<"index "<<index<<"\n";
+    cout<<"num des reg "<<int(curStaticInst->numDestRegs())<<"\t"<<int(curStaticInst->numIntDestRegs())<<"\t"<<int(curStaticInst->numFPDestRegs())<<"\t"<<int(curStaticInst->numVecDestRegs())<<"\t"<<int(curStaticInst->numCCDestRegs())<<"\n";
 
     const RegId dest=curStaticInst->destRegIdx(0);
     
