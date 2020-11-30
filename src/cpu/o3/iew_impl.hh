@@ -559,7 +559,7 @@ DefaultIEW<Impl>::doValuePrediction(const DynInstPtr &inst)
     TheISA::PCState pc = inst->pcState();
 	Addr inst_addr = pc.instAddr();
 
-    if (inst->numIntDestRegs() == 1 && inst->isInteger())
+    if (inst->canValuePredicted())
     {
         predict_value = valuePred->predict(inst_addr, value);
     }
@@ -568,10 +568,10 @@ DefaultIEW<Impl>::doValuePrediction(const DynInstPtr &inst)
     if (predict_value)
     {
         //const RegId& reg = inst->destRegIdx(0);
-	PhysRegIdPtr reg = inst->renamedDestRegIdx(0);
+	    PhysRegIdPtr reg = inst->renamedDestRegIdx(0);
         inst->cpu->setIntReg(reg, value);
-	instQueue.wakeDependents(inst);
-	scoreboard->setReg(inst->renamedDestRegIdx(0));
+	    instQueue.wakeDependents(inst);
+	    scoreboard->setReg(inst->renamedDestRegIdx(0));
     }
     inst->setValuePredicted(predict_value, value);
 }
@@ -1419,25 +1419,33 @@ DefaultIEW<Impl>::executeInsts()
             // that have not been executed.
             bool loadNotExecuted = !inst->isExecuted() && inst->isLoad();
             
-            if (inst->isExecuted() && inst->isValuePredicted())
+            if (inst->isExecuted() && inst->canValuePredicted())
             {
-                RegVal predictedValue = inst->getValuePredicted();
-                
                 // RegVal trueValue = inst->popResult();
                 //const RegId& reg = inst->destRegIdx(0);
-		PhysRegIdPtr reg = inst->renamedDestRegIdx(0);
+                PhysRegIdPtr reg = inst->renamedDestRegIdx(0);
                 RegVal trueValue = inst->cpu->readIntReg(reg);
-
-                bool valueTaken = trueValue == predictedValue;
                 
                 TheISA::PCState pc = inst->pcState();
 	            Addr inst_addr = pc.instAddr();
 
-                valuePred->update(inst_addr, trueValue, predictedValue);
-
-                if (valueTaken==false)
+                bool valueTaken = false;     
+                if (inst->isValuePredicted())
                 {
-                    squashDueToValuePred(inst, tid);    
+                    RegVal predictedValue = inst->getValuePredicted();
+            
+                    valueTaken = trueValue == predictedValue;
+
+                    valuePred->update(inst_addr, inst->isValuePredicted(), valueTaken, trueValue);
+
+                    if (valueTaken==false)
+                    {
+                        squashDueToValuePred(inst, tid);    
+                    }
+                }
+                else
+                {
+                    valuePred->update(inst_addr, inst->isValuePredicted(), valueTaken, trueValue);
                 }
             }
             

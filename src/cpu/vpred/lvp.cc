@@ -34,21 +34,31 @@ LVP::lookup(Addr inst_addr, RegVal &value)
 }
 
 void
-LVP::updateTable(Addr inst_addr, bool valueTaken, RegVal &trueValue)
+LVP::updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVal &trueValue)
 {
     unsigned index = inst_addr%lastPredictorSize;
 
-    if (valueTaken)
+    if (isValuePredicted)
     {
-        // The Value predicted and True values are the same.
-        classificationTable[index]++; 
+        if (isValueTaken)
+        {
+            // The Value predicted and True values are the same.
+            classificationTable[index]++; 
+        }
+        else
+        {
+            // Decrease the counter and update the value to prediction table.
+            classificationTable[index]--;
+            valuePredictionTable[index] = trueValue;
+        }
     }
     else
     {
-        // Decrease the counter and update the value to prediction table.
+        /*Increasing the Counter when the Predictor doesn't predict, so that it predicts in next instance.*/
         classificationTable[index]++;
         valuePredictionTable[index] = trueValue;
     }
+    
 }
 
  LVP*

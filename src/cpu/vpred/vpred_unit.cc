@@ -45,15 +45,11 @@ VPredUnit::predict(Addr inst_addr, RegVal &value)
 }
 
 void
-VPredUnit::update(Addr inst_addr, RegVal &trueValue, RegVal &predValue)
+VPredUnit::update(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVal &trueValue)
 {
-	// TheISA::PCState pc = inst->pcState()
-	// Addr inst_addr = pc.instAddr()
+	updateTable(inst_addr, isValuePredicted, isValueTaken, trueValue);
 
-	bool valueTaken = trueValue == predValue;
-	updateTable(inst_addr, valueTaken, trueValue);
-
-	if (!valueTaken)
+	if (!isValueTaken)
 	{
 		++numIncorrectPredicted;
 	}

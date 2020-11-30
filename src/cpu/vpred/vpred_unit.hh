@@ -27,9 +27,9 @@ class VPredUnit : public SimObject
 
         virtual bool lookup(Addr inst_addr, RegVal &value) = 0;
 
-        void update(Addr inst_addr, RegVal &trueValue, RegVal &predValue);
+        void update(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVal &trueValue);
         
-        virtual void updateTable(Addr inst_addr, bool valueTaken, RegVal &value) = 0;
+        virtual void updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVal &trueValue) = 0;
 
     private:
         Stats::Scalar lookups;
