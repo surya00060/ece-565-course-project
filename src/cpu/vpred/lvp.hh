@@ -21,7 +21,7 @@ class LVP : public VPredUnit
 
         bool lookup(Addr inst_addr, RegVal &value);
 
-        void updateTable(Addr inst_addr, bool valueTaken, RegVal &value);
+        void updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVal &trueValue);
     
     private:
         /** Number of Table Entries*/

@@ -519,6 +519,7 @@ class BaseDynInst : public ExecContext, public RefCounted
     //
     //  Instruction types.  Forward checks to StaticInst object.
     //
+    bool canValuePredicted() const{ return staticInst->numIntDestRegs() == 1 && inst->isInteger();}
     bool isNop()          const { return staticInst->isNop(); }
     bool isMemRef()       const { return staticInst->isMemRef(); }
     bool isLoad()         const { return staticInst->isLoad(); }
