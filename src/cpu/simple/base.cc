@@ -596,13 +596,13 @@ BaseSimpleCPU::postExecute()
     
 
 
-    if (curStaticInst->numDestRegs()>0){
+    if (curStaticInst->numDestRegs()==1){
 
     RegVal value;
 
 
     int index=instAddr%table_size;
-    cout<<"num des reg "<<int(curStaticInst->numDestRegs())<<"\t"<<int(curStaticInst->numIntDestRegs())<<"\t"<<int(curStaticInst->numFPDestRegs())<<"\t"<<int(curStaticInst->numVecDestRegs())<<"\t"<<int(curStaticInst->numCCDestRegs())<<"\n";
+    //cout<<"num des reg "<<int(curStaticInst->numDestRegs())<<"\t"<<int(curStaticInst->numIntDestRegs())<<"\t"<<int(curStaticInst->numFPDestRegs())<<"\t"<<int(curStaticInst->numVecDestRegs())<<"\t"<<int(curStaticInst->numCCDestRegs())<<"\n";
 
     const RegId dest=curStaticInst->destRegIdx(0);
     
