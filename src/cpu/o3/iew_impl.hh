@@ -570,6 +570,7 @@ DefaultIEW<Impl>::doValuePrediction(const DynInstPtr &inst)
         //const RegId& reg = inst->destRegIdx(0);
 	    PhysRegIdPtr reg = inst->renamedDestRegIdx(0);
         inst->cpu->setIntReg(reg, value);
+        // Commenting out this line makes the program work.
 	    instQueue.wakeDependents(inst);
 	    scoreboard->setReg(inst->renamedDestRegIdx(0));
     }
@@ -1103,8 +1104,6 @@ DefaultIEW<Impl>::dispatchInsts(ThreadID tid)
             ++iewLSQFullEvents;
             break;
         }
-
-        doValuePrediction(inst);
         
         // Otherwise issue the instruction just fine.
         if (inst->isAtomic()) {
@@ -1204,6 +1203,8 @@ DefaultIEW<Impl>::dispatchInsts(ThreadID tid)
         if (add_to_iq) {
             instQueue.insert(inst);
         }
+
+        doValuePrediction(inst);
 
         insts_to_dispatch.pop();
 
@@ -1419,6 +1420,8 @@ DefaultIEW<Impl>::executeInsts()
             // that have not been executed.
             bool loadNotExecuted = !inst->isExecuted() && inst->isLoad();
             
+            // Moving this into next if else.
+            /*
             if (inst->isExecuted() && inst->canValuePredicted())
             {
                 // RegVal trueValue = inst->popResult();
@@ -1447,7 +1450,7 @@ DefaultIEW<Impl>::executeInsts()
                 {
                     valuePred->update(inst_addr, inst->isValuePredicted(), valueTaken, trueValue);
                 }
-            }
+            }*/
             
             if (inst->mispredicted() && !loadNotExecuted) {
                 fetchRedirect[tid] = true;
@@ -1510,6 +1513,38 @@ DefaultIEW<Impl>::executeInsts()
                         "already squashing\n");
 
                 ++memOrderViolationEvents;
+            }
+            else
+            {
+                if (inst->isExecuted() && inst->canValuePredicted())
+            {
+                // RegVal trueValue = inst->popResult();
+                //const RegId& reg = inst->destRegIdx(0);
+                PhysRegIdPtr reg = inst->renamedDestRegIdx(0);
+                RegVal trueValue = inst->cpu->readIntReg(reg);
+                
+                TheISA::PCState pc = inst->pcState();
+	            Addr inst_addr = pc.instAddr();
+
+                bool valueTaken = false;     
+                if (inst->isValuePredicted())
+                {
+                    RegVal predictedValue = inst->getValuePredicted();
+            
+                    valueTaken = trueValue == predictedValue;
+
+                    valuePred->update(inst_addr, inst->isValuePredicted(), valueTaken, trueValue);
+
+                    if (valueTaken==false)
+                    {
+                        squashDueToValuePred(inst, tid);    
+                    }
+                }
+                else
+                {
+                    valuePred->update(inst_addr, inst->isValuePredicted(), valueTaken, trueValue);
+                }
+            }
             }
         }
     }
