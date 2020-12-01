@@ -1102,7 +1102,8 @@ InstructionQueue<Impl>::mywakeDependents(const DynInstPtr &completed_inst)
     // @todo: Might want to rename "completeMemInst" to something that
     // indicates that it won't need to be replayed, and call this
     // earlier.  Might not be a big deal.
-
+ 
+    // ASSUME WE ARE NOT DOING VP FOR MEMORY INST
     /*
     if (completed_inst->isMemRef()) {
         memDepUnit[completed_inst->threadNumber].mywakeDependents(completed_inst);
@@ -1164,6 +1165,7 @@ InstructionQueue<Impl>::mywakeDependents(const DynInstPtr &completed_inst)
             //++dependents;
         }
 
+        // I DONT THINK WE NEED TO RESET THE HEAD AS IT MAY STILL BE NEEDED IN THE FUTURE
         /*
 
         // Reset the head node now that all of its dependents have
@@ -1172,7 +1174,7 @@ InstructionQueue<Impl>::mywakeDependents(const DynInstPtr &completed_inst)
         dependGraph.clearInst(dest_reg->flatIndex());
         */
 
-
+        // THIS CREATES THE PAGE FAULT. WE'RE ALREADY SETTING THE REGISTER OUTSIDE, RIGHT?
         // Mark the scoreboard as having that register ready.
         //regScoreboard[dest_reg->flatIndex()] = true;
     }
