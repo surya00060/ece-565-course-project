@@ -1205,7 +1205,7 @@ DefaultIEW<Impl>::dispatchInsts(ThreadID tid)
             //doValuePrediction(inst);
         }
 
-        doValuePrediction(inst);
+        //doValuePrediction(inst);
 
         insts_to_dispatch.pop();
 
@@ -1285,6 +1285,8 @@ DefaultIEW<Impl>::executeInsts()
         DPRINTF(IEW, "Execute: Executing instructions from IQ.\n");
 
         DynInstPtr inst = instQueue.getInstToExecute();
+
+        doValuePrediction(inst);
 
         DPRINTF(IEW, "Execute: Processing PC %s, [tid:%i] [sn:%llu].\n",
                 inst->pcState(), inst->threadNumber,inst->seqNum);
@@ -1422,7 +1424,7 @@ DefaultIEW<Impl>::executeInsts()
             bool loadNotExecuted = !inst->isExecuted() && inst->isLoad();
             
             // Moving this into next if else.
-            /*
+            
             if (inst->isExecuted() && inst->canValuePredicted())
             {
                 // RegVal trueValue = inst->popResult();
@@ -1451,7 +1453,7 @@ DefaultIEW<Impl>::executeInsts()
                 {
                     valuePred->update(inst_addr, inst->isValuePredicted(), valueTaken, trueValue);
                 }
-            }*/
+            }
             
             if (inst->mispredicted() && !loadNotExecuted) {
                 fetchRedirect[tid] = true;
@@ -1517,6 +1519,8 @@ DefaultIEW<Impl>::executeInsts()
             }
             else
             {
+
+            
                 if (inst->isExecuted() && inst->canValuePredicted())
             {
                 // RegVal trueValue = inst->popResult();
@@ -1546,6 +1550,8 @@ DefaultIEW<Impl>::executeInsts()
                     valuePred->update(inst_addr, inst->isValuePredicted(), valueTaken, trueValue);
                 }
             }
+
+            
             }
         }
     }
