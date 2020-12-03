@@ -20,6 +20,7 @@ class LVP : public VPredUnit
         LVP(const LVPParams *params);
 
         bool lookup(Addr inst_addr, RegVal &value);
+        float getconf(Addr inst_addr, RegVal &value);
 
         void updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVal &trueValue);
     
