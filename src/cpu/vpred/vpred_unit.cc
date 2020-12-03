@@ -44,6 +44,17 @@ VPredUnit::predict(Addr inst_addr, RegVal &value)
 	return prediction;
 }
 
+float
+VPredUnit::getpredictconf(Addr inst_addr, RegVal &value)
+{
+
+
+	return getconf(inst_addr, value); // Returns prediction confidence
+
+
+}
+
+
 void
 VPredUnit::update(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVal &trueValue)
 {

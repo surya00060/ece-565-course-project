@@ -33,6 +33,18 @@ LVP::lookup(Addr inst_addr, RegVal &value)
     return prediction;
 }
 
+float
+LVP::getconf(Addr inst_addr, RegVal &value)
+{
+    unsigned index = inst_addr%lastPredictorSize;
+
+    uint8_t counter_val = classificationTable[index];
+
+
+
+    return float(counter_val/2^lastCtrBits); // Returning prediction confidence
+}
+
 void
 LVP::updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVal &trueValue)
 {
