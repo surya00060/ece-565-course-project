@@ -16,5 +16,5 @@ class LVP(ValuePredictor):
     cxx_class = 'LVP'
     cxx_header = "cpu/vpred/lvp.hh"
 
-    lastPredictorSize = Param.Unsigned(4096, "Size of LVP predictor")
+    lastPredictorSize = Param.Unsigned(8192, "Size of LVP predictor")
     lastCtrBits = Param.Unsigned(3, "Bits per counter")

@@ -57,6 +57,7 @@
 #include "sim/full_system.hh"
 #include "sim/system.hh"
 
+
 // forward declarations
 class Checkpoint;
 class Process;
@@ -75,6 +76,7 @@ namespace Trace {
 
 struct BaseSimpleCPUParams;
 class BPredUnit;
+class VPredUnit;
 class SimpleExecContext;
 
 class BaseSimpleCPU : public BaseCPU
@@ -82,6 +84,7 @@ class BaseSimpleCPU : public BaseCPU
   protected:
     ThreadID curThread;
     BPredUnit *branchPred;
+    VPredUnit *valuePred;
 
     void checkPcEventQueue();
     void swapActiveThread();

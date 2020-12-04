@@ -57,6 +57,7 @@
 #include "cpu/checker/thread_context.hh"
 #include "cpu/exetrace.hh"
 #include "cpu/pred/bpred_unit.hh"
+#include "cpu/vpred/vpred_unit.hh"
 #include "cpu/profile.hh"
 #include "cpu/simple/exec_context.hh"
 #include "cpu/simple_thread.hh"
@@ -85,6 +86,7 @@ BaseSimpleCPU::BaseSimpleCPU(BaseSimpleCPUParams *p)
     : BaseCPU(p),
       curThread(0),
       branchPred(p->branchPred),
+      valuePred(p->valuePred),
       traceData(NULL),
       inst(),
       _status(Idle)
@@ -567,6 +569,47 @@ BaseSimpleCPU::postExecute()
 
     TheISA::PCState pc = threadContexts[curThread]->pcState();
     Addr instAddr = pc.instAddr();
+
+    // MY MODIFICATIONS FOR VP PREDICTION STATS
+
+    if (curStaticInst->numIntDestRegs() == 1 && curStaticInst->isInteger())
+
+    {
+
+    RegVal value;
+    bool prediction=valuePred->predict(instAddr,value);
+
+
+    const RegId dest=curStaticInst->destRegIdx(0);
+    const RegIndex dest_id=dest.index();  
+
+    //cout<<"dest id:  "<<dest_id<<endl;
+
+    if (dest_id<32){
+
+    RegVal trueValue = thread->readIntReg(dest_id); 
+    bool valueTaken = false;
+
+        if (prediction)
+        {      
+        valueTaken = trueValue == value;
+        valuePred->update(instAddr, prediction, valueTaken, trueValue);
+        }
+        else{
+        valuePred->update(instAddr, prediction, valueTaken, trueValue);
+        }
+
+    }
+
+
+
+
+    }
+
+   
+
+
+
     if (FullSystem && thread->profile) {
         bool usermode = TheISA::inUserMode(threadContexts[curThread]);
         thread->profilePC = usermode ? 1 : instAddr;
