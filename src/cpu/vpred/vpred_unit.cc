@@ -60,7 +60,7 @@ VPredUnit::update(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegV
 {
 	updateTable(inst_addr, isValuePredicted, isValueTaken, trueValue);
 
-	if (!isValueTaken)
+	if ((isValuePredicted) && (!isValueTaken))
 	{
 		++numIncorrectPredicted;
 	}

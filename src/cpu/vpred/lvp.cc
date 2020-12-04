@@ -31,6 +31,7 @@ LVP::lookup(Addr inst_addr, RegVal &value)
     }
 
     return prediction;
+    
 }
 
 float
