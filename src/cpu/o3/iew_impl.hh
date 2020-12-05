@@ -561,7 +561,7 @@ DefaultIEW<Impl>::doValuePrediction(const DynInstPtr &inst)
 
     if (inst->canValuePredicted())
     {
-        predict_value = valuePred->predict(inst_addr, value);
+        predict_value = valuePred->predict(inst->staticInst, inst_addr, value);
     }
 
     // Predictor makes a succesful prediction.
@@ -1436,7 +1436,7 @@ DefaultIEW<Impl>::executeInsts()
             
                     valueTaken = trueValue == predictedValue;
 
-                    valuePred->update(inst_addr, inst->isValuePredicted(), valueTaken, trueValue);
+                    valuePred->update(inst->staticInst, inst_addr, inst->isValuePredicted(), valueTaken, trueValue);
 
                     if (valueTaken==false)
                     {
@@ -1445,7 +1445,7 @@ DefaultIEW<Impl>::executeInsts()
                 }
                 else
                 {
-                    valuePred->update(inst_addr, inst->isValuePredicted(), valueTaken, trueValue);
+                    valuePred->update(inst->staticInst, inst_addr, inst->isValuePredicted(), valueTaken, trueValue);
                 }
             }
             
