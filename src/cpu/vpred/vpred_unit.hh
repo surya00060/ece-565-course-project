@@ -53,6 +53,10 @@ class VPredUnit : public SimObject
 
         /*Number of Load Values Correctly Predicted.*/
         Stats::Scalar numLoadCorrectPredicted;
+
+        Stats::Formula valuePredAccuracy;
+
+        Stats::Formula valuePredCoverage;
 };
 
 #endif // __CPU_PRED_VPRED_UNIT_HH__

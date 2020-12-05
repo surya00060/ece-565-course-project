@@ -39,6 +39,22 @@ VPredUnit::regStats()
         .name(name() + ".numLoadCorrectPredicted")
         .desc("Number of Correct Load value predictions")
         ;
+
+	valuePredAccuracy
+		.name(name() + ".valuePredAccuracy")
+        .desc("VP Accuracy")
+		.precision(6);
+        ;
+
+	valuePredAccuracy = numCorrectPredicted/numPredicted;
+
+	valuePredCoverage
+		.name(name() + ".valuePredCoverage")
+        .desc("VP Coverage")
+		.precision(6);
+        ;
+
+	valuePredCoverage = numCorrectPredicted/lookups; 
 }
 
 

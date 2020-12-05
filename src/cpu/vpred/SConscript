@@ -5,5 +5,7 @@ if env['TARGET_ISA'] == 'null':
 
 SimObject('ValuePredictor.py')
 
-Source('lvp.cc')
 Source('vpred_unit.cc')
+Source('lvp.cc')
+Source('svp.cc')
+Source('fcmvp.cc')
