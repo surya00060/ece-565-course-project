@@ -20,26 +20,40 @@ VPredUnit::regStats()
         .desc("Number of value predictions")
         ;
 
+	numCorrectPredicted
+        .name(name() + ".numCorrectPredicted")
+        .desc("Number of value predictions")
+        ;
+
     numIncorrectPredicted
         .name(name() + ".numIncorrectPredicted")
         .desc("Number of incorrect value predictions")
+        ;
+	
+	numLoadPredicted
+        .name(name() + ".numLoadPredicted")
+        .desc("Number of Load value predictions")
+        ;
+
+	numLoadCorrectPredicted
+        .name(name() + ".numLoadCorrectPredicted")
+        .desc("Number of Correct Load value predictions")
         ;
 }
 
 
 bool
-VPredUnit::predict(Addr inst_addr, RegVal &value)
+VPredUnit::predict(const StaticInstPtr &inst, Addr inst_addr, RegVal &value)
 {
 	++lookups;
-
-	// TheISA::PCState pc = inst->pcState()
-	// Addr inst_addr = pc.instAddr()
 
 	bool prediction= lookup(inst_addr, value);
 
 	if (prediction)
 	{
 		++numPredicted;
+		if (inst->isLoad())
+			++numLoadPredicted;
 	}
 	return prediction;
 }
@@ -56,13 +70,22 @@ VPredUnit::getpredictconf(Addr inst_addr, RegVal &value)
 
 
 void
-VPredUnit::update(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVal &trueValue)
+VPredUnit::update(const StaticInstPtr &inst, Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVal &trueValue)
 {
 	updateTable(inst_addr, isValuePredicted, isValueTaken, trueValue);
 
-	if ((isValuePredicted) && (!isValueTaken))
+	if (isValuePredicted)
 	{
-		++numIncorrectPredicted;
+		if (isValueTaken)
+		{
+			++numCorrectPredicted;
+			if (inst->isLoad())
+				++numLoadCorrectPredicted;
+		}
+		else
+		{
+			++numIncorrectPredicted;
+		}
 	}
 }
 

@@ -577,7 +577,7 @@ BaseSimpleCPU::postExecute()
     {
 
     RegVal value;
-    bool prediction=valuePred->predict(instAddr,value);
+    bool prediction=valuePred->predict(curStaticInst, instAddr,value);
 
 
     const RegId dest=curStaticInst->destRegIdx(0);
@@ -593,10 +593,10 @@ BaseSimpleCPU::postExecute()
         if (prediction)
         {      
         valueTaken = trueValue == value;
-        valuePred->update(instAddr, prediction, valueTaken, trueValue);
+        valuePred->update(curStaticInst, instAddr, prediction, valueTaken, trueValue);
         }
         else{
-        valuePred->update(instAddr, prediction, valueTaken, trueValue);
+        valuePred->update(curStaticInst, instAddr, prediction, valueTaken, trueValue);
         }
 
     }
