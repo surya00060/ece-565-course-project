@@ -23,7 +23,7 @@ class VPredUnit : public SimObject
         /*
         * Predicts whether to do VP and returns the predicted value by reference. 
         */
-        bool predict(Addr inst_addr, RegVal &value);
+        bool predict(const StaticInstPtr &inst, Addr inst_addr, RegVal &value);
 
         virtual bool lookup(Addr inst_addr, RegVal &value) = 0;
 
@@ -31,14 +31,28 @@ class VPredUnit : public SimObject
 
         virtual float getconf(Addr inst_addr, RegVal &value) = 0;
 
-        void update(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVal &trueValue);
+        void update(const StaticInstPtr &inst, Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVal &trueValue);
         
         virtual void updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVal &trueValue) = 0;
 
     private:
+        /*Number of Possible Value Predictions*/
         Stats::Scalar lookups;
+
+        /*Number of Values Predicted.*/
         Stats::Scalar numPredicted;
+
+        /*Number of Correct Predictions.*/
+        Stats::Scalar numCorrectPredicted;
+
+        /*Number of Incorrect Predictions.*/
         Stats::Scalar numIncorrectPredicted;
+
+        /*Number of Load Values Predicted.*/
+        Stats::Scalar numLoadPredicted;
+
+        /*Number of Load Values Correctly Predicted.*/
+        Stats::Scalar numLoadCorrectPredicted;
 };
 
 #endif // __CPU_PRED_VPRED_UNIT_HH__
