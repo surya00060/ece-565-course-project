@@ -557,11 +557,11 @@ DefaultIEW<Impl>::doValuePrediction(const DynInstPtr &inst)
     RegVal value;
     
     TheISA::PCState pc = inst->pcState();
-	Addr inst_addr = pc.instAddr();
+	//Addr inst_addr = pc.instAddr();
 
     if (inst->canValuePredicted())
     {
-        predict_value = valuePred->predict(inst_addr, value);
+        //predict_value = valuePred->predict(inst, inst_addr, value);
     }
 
     // Predictor makes a succesful prediction.
@@ -1427,7 +1427,7 @@ DefaultIEW<Impl>::executeInsts()
                 RegVal trueValue = inst->cpu->readIntReg(reg);
                 
                 TheISA::PCState pc = inst->pcState();
-	            Addr inst_addr = pc.instAddr();
+	            //Addr inst_addr = pc.instAddr();
 
                 bool valueTaken = false;     
                 if (inst->isValuePredicted())
@@ -1436,7 +1436,7 @@ DefaultIEW<Impl>::executeInsts()
             
                     valueTaken = trueValue == predictedValue;
 
-                    valuePred->update(inst_addr, inst->isValuePredicted(), valueTaken, trueValue);
+                    //valuePred->update(inst, inst_addr, inst->isValuePredicted(), valueTaken, trueValue);
 
                     if (valueTaken==false)
                     {
@@ -1445,7 +1445,7 @@ DefaultIEW<Impl>::executeInsts()
                 }
                 else
                 {
-                    valuePred->update(inst_addr, inst->isValuePredicted(), valueTaken, trueValue);
+                    //valuePred->update(inst, inst_addr, inst->isValuePredicted(), valueTaken, trueValue);
                 }
             }
             
