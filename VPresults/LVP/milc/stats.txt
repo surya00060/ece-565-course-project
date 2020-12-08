@@ -1,11 +1,11 @@
 
 ---------- Begin Simulation Statistics ----------
 final_tick                               584553004500                       # Number of ticks from beginning of simulation (restored from checkpoints and never reset)
-host_inst_rate                                 548860                       # Simulator instruction rate (inst/s)
-host_mem_usage                                 843636                       # Number of bytes of host memory used
-host_op_rate                                   641626                       # Simulator op (including micro ops) rate (op/s)
-host_seconds                                  1821.96                       # Real time elapsed on the host
-host_tick_rate                              320837596                       # Simulator tick rate (ticks/s)
+host_inst_rate                                 631217                       # Simulator instruction rate (inst/s)
+host_mem_usage                                 843544                       # Number of bytes of host memory used
+host_op_rate                                   737903                       # Simulator op (including micro ops) rate (op/s)
+host_seconds                                  1584.24                       # Real time elapsed on the host
+host_tick_rate                              368979494                       # Simulator tick rate (ticks/s)
 sim_freq                                 1000000000000                       # Frequency of simulated ticks
 sim_insts                                  1000000000                       # Number of instructions simulated
 sim_ops                                    1169017174                       # Number of ops (including micro ops) simulated
@@ -211,8 +211,11 @@ system.cpu.op_class::IprAccess                      0      0.00%    100.00% # Cl
 system.cpu.op_class::InstPrefetch                   0      0.00%    100.00% # Class of executed instruction
 system.cpu.op_class::total                 1169106010                       # Class of executed instruction
 system.cpu.valuePred.lookups                554053218                       # Number of VP lookups
-system.cpu.valuePred.numIncorrectPredicted     79992950                       # Number of incorrect value predictions
-system.cpu.valuePred.numPredicted           381823503                       # Number of value predictions
+system.cpu.valuePred.numCorrectPredicted    175747532                       # Number of value predictions
+system.cpu.valuePred.numIncorrectPredicted     80075386                       # Number of incorrect value predictions
+system.cpu.valuePred.numLoadCorrectPredicted     56835965                       # Number of Correct Load value predictions
+system.cpu.valuePred.numLoadPredicted        61180432                       # Number of Load value predictions
+system.cpu.valuePred.numPredicted           454638211                       # Number of value predictions
 system.cpu.workload.numSyscalls                    51                       # Number of system calls
 system.membus.snoop_filter.hit_multi_requests            0                       # Number of requests hitting in the snoop filter with multiple (>1) holders of the requested data.
 system.membus.snoop_filter.hit_multi_snoops            0                       # Number of snoops hitting in the snoop filter with multiple (>1) holders of the requested data.

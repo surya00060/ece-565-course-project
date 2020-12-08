@@ -326,7 +326,7 @@
                     "lastCtrBits": 3, 
                     "name": "valuePred", 
                     "eventq_index": 0, 
-                    "lastPredictorSize": 8192, 
+                    "lastPredictorSize": 4096, 
                     "cxx_class": "LVP", 
                     "path": "system.cpu.valuePred", 
                     "type": "LVP"
