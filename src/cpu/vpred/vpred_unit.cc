@@ -44,7 +44,7 @@ VPredUnit::predict(Addr inst_addr, RegVal &value)
 	return prediction;
 }
 
-float
+uint8_t
 VPredUnit::getpredictconf(Addr inst_addr, RegVal &value)
 {
 

@@ -27,9 +27,9 @@ class VPredUnit : public SimObject
 
         virtual bool lookup(Addr inst_addr, RegVal &value) = 0;
 
-        float getpredictconf(Addr inst_addr, RegVal &value);
+        uint8_t getpredictconf(Addr inst_addr, RegVal &value);
 
-        virtual float getconf(Addr inst_addr, RegVal &value) = 0;
+        virtual uint8_t getconf(Addr inst_addr, RegVal &value) = 0;
 
         void update(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVal &trueValue);
         

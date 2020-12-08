@@ -25,6 +25,8 @@ LVP::lookup(Addr inst_addr, RegVal &value)
     /*Gets the MSB of the count.*/
     bool prediction = counter_val >> (lastCtrBits-1);
 
+    //bool prediction = (counter_val == ((2^(lastCtrBits))-1));
+
     if (prediction)
     {
         value = valuePredictionTable[index];
@@ -34,7 +36,7 @@ LVP::lookup(Addr inst_addr, RegVal &value)
     
 }
 
-float
+uint8_t
 LVP::getconf(Addr inst_addr, RegVal &value)
 {
     unsigned index = inst_addr%lastPredictorSize;
@@ -43,13 +45,14 @@ LVP::getconf(Addr inst_addr, RegVal &value)
 
 
 
-    return float(counter_val/2^lastCtrBits); // Returning prediction confidence
+    return counter_val; // Returning prediction confidence
 }
 
 void
 LVP::updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVal &trueValue)
 {
     unsigned index = inst_addr%lastPredictorSize;
+    //uint8_t counter_val = classificationTable[index];
 
     if (isValuePredicted)
     {
@@ -61,6 +64,13 @@ LVP::updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVa
         else
         {
             // Decrease the counter and update the value to prediction table.
+            /*            
+            if (counter_val<5){
+               valuePredictionTable[index] = trueValue;
+               
+            }
+            */
+            //classificationTable[index].reset();
             classificationTable[index]--;
             valuePredictionTable[index] = trueValue;
         }
