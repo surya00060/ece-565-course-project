@@ -323,13 +323,15 @@
                 "path": "system.cpu", 
                 "pwr_gating_latency": 300, 
                 "valuePred": {
-                    "lastCtrBits": 3, 
                     "name": "valuePred", 
+                    "historyTableSize": 8192, 
+                    "ctrBits": 3, 
+                    "historyLength": 4, 
                     "eventq_index": 0, 
-                    "lastPredictorSize": 8192, 
-                    "cxx_class": "LVP", 
+                    "cxx_class": "FCMVP", 
                     "path": "system.cpu.valuePred", 
-                    "type": "LVP"
+                    "valuePredictorTableSize": 4096, 
+                    "type": "FCMVP"
                 }, 
                 "switched_out": false, 
                 "workload": [
