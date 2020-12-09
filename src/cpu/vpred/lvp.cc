@@ -10,7 +10,8 @@ LVP::LVP(const LVPParams *params)
       lastPredictorSize(params->lastPredictorSize),
       lastCtrBits(params->lastCtrBits),
       classificationTable(lastPredictorSize, SatCounter(lastCtrBits)),
-      valuePredictionTable(lastPredictorSize)
+      valuePredictionTable(lastPredictorSize),
+      tagTable(lastPredictorSize)
 {
     // valuePredictionTable.resize(lastPredictorSize);
 }
@@ -22,8 +23,12 @@ LVP::lookup(Addr inst_addr, RegVal &value)
 
     uint8_t counter_val = classificationTable[index];
 
+    Addr tag=tagTable[index];
+
+
     /*Gets the MSB of the count.*/
-    bool prediction = counter_val >> (lastCtrBits-1);
+    //bool prediction = counter_val >> (lastCtrBits-1);
+    bool prediction = ((counter_val == ((2^lastCtrBits)-1)) && (tag==inst_addr));  
 
     if (prediction)
     {
@@ -61,15 +66,28 @@ LVP::updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVa
         else
         {
             // Decrease the counter and update the value to prediction table.
-            classificationTable[index]--;
+            //classificationTable[index]--;
+            classificationTable[index].reset();
             valuePredictionTable[index] = trueValue;
+
         }
     }
     else
     {
         /*Increasing the Counter when the Predictor doesn't predict, so that it predicts in next instance.*/
-        classificationTable[index]++;
-        valuePredictionTable[index] = trueValue;
+        
+        if (tagTable[index]==inst_addr){
+           classificationTable[index]++;
+           valuePredictionTable[index] = trueValue;
+        }
+        else{
+            tagTable[index]=inst_addr;
+            classificationTable[index].reset();
+            valuePredictionTable[index] = trueValue;
+        }
+
+
+
     }
     
 }
