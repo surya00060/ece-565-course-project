@@ -27,13 +27,13 @@ FCMVP::lookup(Addr inst_addr, RegVal &value)
 
     /*Gets the MSB of the count.*/
     //bool prediction = counter_val >> (ctrBits-1);
-    bool prediction = ((unsigned(counter_val) == (pow(2,ctrBits)-1)) && (tag==inst_addr>>(ctrBits)));
+    bool prediction = ((unsigned(counter_val) == (pow(2,ctrBits)-1)) && (tag==inst_addr));
 
     if (prediction)
     {
-        RegVal hashedHistory = 0;
+        RegVal hashedHistory = valueHistoryTable[indexVHT][0];
 
-        for(int i = 0; i < historyLength; ++i)
+        for(int i = 1; i < historyLength; ++i)
         {
             hashedHistory = hashedHistory ^ valueHistoryTable[indexVHT][i];
         }
@@ -60,48 +60,70 @@ FCMVP::updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, Reg
 {
     unsigned indexVHT = inst_addr%historyTableSize;;
 
-    // Update Counters
+    // Value is predicted only if tag matches and high confidence. 
     if (isValuePredicted)
     {
         if (isValueTaken)
         {
             // The Value predicted and True values are the same.
-            classificationTable[indexVHT]++; 
+            classificationTable[indexVHT]++;
         }
         else
         {
             // Decrease the counter and update the value to prediction table.
             classificationTable[indexVHT].reset();
         }
+
+        // Update History and Tables for tag match case.
+        // Add the new data history at historyLength-1. O is the Least recently used.
+        RegVal hashedHistory = valueHistoryTable[indexVHT][0];
+
+        for(int i = 1; i < historyLength; i++)
+        {
+            hashedHistory = hashedHistory ^ valueHistoryTable[indexVHT][i];
+            valueHistoryTable[indexVHT][i-1] = valueHistoryTable[indexVHT][i];
+        }
+
+        valueHistoryTable[indexVHT][historyLength-1] = trueValue;
+
+        unsigned indexVPT = hashedHistory%valuePredictorTableSize;
+        valuePredictionTable[indexVPT] = trueValue;
     }
+    // Tag matches but counter satration not reached.
+    else if (tagTable[indexVHT]==inst_addr)
+    {
+        classificationTable[indexVHT]++;
+
+        RegVal hashedHistory = valueHistoryTable[indexVHT][0];
+
+        for(int i = 1; i < historyLength; i++)
+        {
+            hashedHistory = hashedHistory ^ valueHistoryTable[indexVHT][i];
+            valueHistoryTable[indexVHT][i-1] = valueHistoryTable[indexVHT][i];
+        }
+
+        valueHistoryTable[indexVHT][historyLength-1] = trueValue;
+
+        unsigned indexVPT = hashedHistory%valuePredictorTableSize;
+        valuePredictionTable[indexVPT] = trueValue;
+    }
+    // Tag doesn't match. So, reset the counter. Reset the history values to zero.
     else
     {
-        /*Increasing the Counter when the Predictor doesn't predict, so that it predicts in next instance.*/
-        if (tagTable[indexVHT]==inst_addr>>(ctrBits)){
-           classificationTable[indexVHT]++;
-        }
-        else {
-            tagTable[indexVHT]=inst_addr>>(ctrBits);
-            classificationTable[indexVHT].reset();
-        }
+        tagTable[indexVHT]=inst_addr;
+        classificationTable[indexVHT].reset();
+        classificationTable[indexVHT]++;
         
+        for(int i = 0; i < historyLength; i++)
+        {
+            valueHistoryTable[indexVHT][i] = 0;
+        }
+        valueHistoryTable[indexVHT][historyLength-1] = trueValue;
+        RegVal hashedHistory = trueValue;
+
+        unsigned indexVPT = hashedHistory%valuePredictorTableSize;
+        valuePredictionTable[indexVPT] = trueValue;
     }
-
-    // Update History and Tables
-    // Add the new data history at historyLength-1. O is the Least recently used.
-
-    RegVal hashedHistory = valueHistoryTable[indexVHT][0];
-
-    for(int i = 1; i < historyLength; i++)
-    {
-        hashedHistory = hashedHistory ^ valueHistoryTable[indexVHT][i];
-        valueHistoryTable[indexVHT][i-1] = valueHistoryTable[indexVHT][i];
-    }
-
-    valueHistoryTable[indexVHT][historyLength-1] = trueValue;
-
-    unsigned indexVPT = hashedHistory%valuePredictorTableSize;
-    valuePredictionTable[indexVPT] = trueValue;
 }
 
  FCMVP*
