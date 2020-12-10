@@ -10,7 +10,8 @@ FCMVP::FCMVP(const FCMVPParams *params)
       ctrBits(params->ctrBits),
       classificationTable(historyTableSize, SatCounter(ctrBits)),
       valueHistoryTable(historyTableSize, std::vector<RegVal> (historyLength)),
-      valuePredictionTable(valuePredictorTableSize)
+      valuePredictionTable(valuePredictorTableSize),
+      tagTable(historyTableSize)
 {
     // valuePredictionTable.resize(lastPredictorSize);
 }
@@ -22,8 +23,11 @@ FCMVP::lookup(Addr inst_addr, RegVal &value)
 
     uint8_t counter_val = classificationTable[indexVHT];
 
+    Addr tag=tagTable[indexVHT];
+
     /*Gets the MSB of the count.*/
-    bool prediction = counter_val >> (ctrBits-1);
+    //bool prediction = counter_val >> (ctrBits-1);
+    bool prediction = ((unsigned(counter_val) == (pow(2,ctrBits)-1)) && (tag==inst_addr>>(ctrBits)));
 
     if (prediction)
     {
@@ -67,21 +71,28 @@ FCMVP::updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, Reg
         else
         {
             // Decrease the counter and update the value to prediction table.
-            classificationTable[indexVHT]--;
+            classificationTable[indexVHT].reset();
         }
     }
     else
     {
         /*Increasing the Counter when the Predictor doesn't predict, so that it predicts in next instance.*/
-        classificationTable[indexVHT]++;
+        if (tagTable[indexVHT]==inst_addr>>(ctrBits)){
+           classificationTable[indexVHT]++;
+        }
+        else {
+            tagTable[indexVHT]=inst_addr>>(ctrBits);
+            classificationTable[indexVHT].reset();
+        }
+        
     }
 
     // Update History and Tables
-    // Add the new data history at historyLength-1. O is the Least used.
+    // Add the new data history at historyLength-1. O is the Least recently used.
 
     RegVal hashedHistory = valueHistoryTable[indexVHT][0];
 
-    for(int i = historyLength-1; i > 0; --i)
+    for(int i = 1; i < historyLength; i++)
     {
         hashedHistory = hashedHistory ^ valueHistoryTable[indexVHT][i];
         valueHistoryTable[indexVHT][i-1] = valueHistoryTable[indexVHT][i];
