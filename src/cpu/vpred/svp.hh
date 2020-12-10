@@ -40,5 +40,8 @@ class SVP : public VPredUnit
         /*Array of Stride*/
         std::vector<RegVal> stridePredictionTable;
 
+        /*Array of tag value*/
+        std::vector<Addr> tagTable;
+
 };
 #endif // __CPU_VPRED_LVP_PRED_HH__

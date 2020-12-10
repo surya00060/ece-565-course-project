@@ -8,7 +8,8 @@ SVP::SVP(const SVPParams *params)
       lastCtrBits(params->lastCtrBits),
       classificationTable(lastPredictorSize, SatCounter(lastCtrBits)),
       valuePredictionTable(lastPredictorSize),
-      stridePredictionTable(lastPredictorSize)
+      stridePredictionTable(lastPredictorSize),
+      tagTable(lastPredictorSize)
 {
     // valuePredictionTable.resize(lastPredictorSize);
 }
@@ -20,8 +21,12 @@ SVP::lookup(Addr inst_addr, RegVal &value)
 
     uint8_t counter_val = classificationTable[index];
 
+    /* Get tag value */
+    Addr tag=tagTable[index]; 
+
     /*Gets the MSB of the count.*/
-    bool prediction = counter_val >> (lastCtrBits-1);
+    //bool prediction = counter_val >> (lastCtrBits-1);
+    bool prediction = ((unsigned(counter_val) == (pow(2,lastCtrBits)-1)) && (tag==inst_addr>>(lastCtrBits))); 
 
     if (prediction)
     {
@@ -67,7 +72,7 @@ SVP::updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVa
         else
         {
             // Decrease the counter and update the value to prediction table.
-            classificationTable[index]--;
+            classificationTable[index].reset();
             valuePredictionTable[index] = trueValue;
             stridePredictionTable[index] = stride;
         }
@@ -75,9 +80,18 @@ SVP::updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVa
     else
     {
         /*Increasing the Counter when the Predictor doesn't predict, so that it predicts in next instance.*/
+
+        if (tagTable[index]==inst_addr>>(lastCtrBits)){
         classificationTable[index]++;
         valuePredictionTable[index] = trueValue;
         stridePredictionTable[index] = stride;
+        }
+        else{
+        tagTable[index]=inst_addr>>(lastCtrBits);
+        classificationTable[index].reset();
+        valuePredictionTable[index] = trueValue;
+        stridePredictionTable[index] = stride;
+        }
     }
     
 }
