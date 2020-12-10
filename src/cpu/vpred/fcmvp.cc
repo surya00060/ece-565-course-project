@@ -35,7 +35,7 @@ FCMVP::lookup(Addr inst_addr, RegVal &value)
 
         for(int i = 1; i < historyLength; ++i)
         {
-            hashedHistory = hashedHistory ^ valueHistoryTable[indexVHT][i];
+            hashedHistory = hashedHistory ^ ( (unsigned) pow(2,i) * valueHistoryTable[indexVHT][i]);
         }
         unsigned indexVPT = hashedHistory%valuePredictorTableSize;
         value = valuePredictionTable[indexVPT];
@@ -80,7 +80,7 @@ FCMVP::updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, Reg
 
         for(int i = 1; i < historyLength; i++)
         {
-            hashedHistory = hashedHistory ^ valueHistoryTable[indexVHT][i];
+            hashedHistory = hashedHistory ^ ((unsigned) pow(2,i) *valueHistoryTable[indexVHT][i]);
             valueHistoryTable[indexVHT][i-1] = valueHistoryTable[indexVHT][i];
         }
 
@@ -98,7 +98,7 @@ FCMVP::updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, Reg
 
         for(int i = 1; i < historyLength; i++)
         {
-            hashedHistory = hashedHistory ^ valueHistoryTable[indexVHT][i];
+            hashedHistory = hashedHistory ^ ((unsigned) pow(2,i) *valueHistoryTable[indexVHT][i]);
             valueHistoryTable[indexVHT][i-1] = valueHistoryTable[indexVHT][i];
         }
 
