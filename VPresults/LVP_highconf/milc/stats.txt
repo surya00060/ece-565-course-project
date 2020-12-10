@@ -1,11 +1,11 @@
 
 ---------- Begin Simulation Statistics ----------
 final_tick                               584553004500                       # Number of ticks from beginning of simulation (restored from checkpoints and never reset)
-host_inst_rate                                 612688                       # Simulator instruction rate (inst/s)
-host_mem_usage                                 843700                       # Number of bytes of host memory used
-host_op_rate                                   716243                       # Simulator op (including micro ops) rate (op/s)
-host_seconds                                  1632.15                       # Real time elapsed on the host
-host_tick_rate                              358148667                       # Simulator tick rate (ticks/s)
+host_inst_rate                                 424212                       # Simulator instruction rate (inst/s)
+host_mem_usage                                 843768                       # Number of bytes of host memory used
+host_op_rate                                   495911                       # Simulator op (including micro ops) rate (op/s)
+host_seconds                                  2357.31                       # Real time elapsed on the host
+host_tick_rate                              247974172                       # Simulator tick rate (ticks/s)
 sim_freq                                 1000000000000                       # Frequency of simulated ticks
 sim_insts                                  1000000000                       # Number of instructions simulated
 sim_ops                                    1169017174                       # Number of ops (including micro ops) simulated
@@ -211,13 +211,13 @@ system.cpu.op_class::IprAccess                      0      0.00%    100.00% # Cl
 system.cpu.op_class::InstPrefetch                   0      0.00%    100.00% # Class of executed instruction
 system.cpu.op_class::total                 1169106010                       # Class of executed instruction
 system.cpu.valuePred.lookups                333483366                       # Number of VP lookups
-system.cpu.valuePred.numCorrectPredicted         1426                       # Number of value predictions
-system.cpu.valuePred.numIncorrectPredicted     50244692                       # Number of incorrect value predictions
-system.cpu.valuePred.numLoadCorrectPredicted          442                       # Number of Correct Load value predictions
-system.cpu.valuePred.numLoadPredicted          322008                       # Number of Load value predictions
-system.cpu.valuePred.numPredicted            50246118                       # Number of value predictions
-system.cpu.valuePred.valuePredAccuracy       0.000028                       # VP Accuracy
-system.cpu.valuePred.valuePredCoverage       0.000004                       # VP Coverage
+system.cpu.valuePred.numCorrectPredicted    164700253                       # Number of value predictions
+system.cpu.valuePred.numIncorrectPredicted     21094195                       # Number of incorrect value predictions
+system.cpu.valuePred.numLoadCorrectPredicted     53888995                       # Number of Correct Load value predictions
+system.cpu.valuePred.numLoadPredicted        55289880                       # Number of Load value predictions
+system.cpu.valuePred.numPredicted           185794448                       # Number of value predictions
+system.cpu.valuePred.valuePredAccuracy       0.886465                       # VP Accuracy
+system.cpu.valuePred.valuePredCoverage       0.493878                       # VP Coverage
 system.cpu.workload.numSyscalls                    51                       # Number of system calls
 system.membus.snoop_filter.hit_multi_requests            0                       # Number of requests hitting in the snoop filter with multiple (>1) holders of the requested data.
 system.membus.snoop_filter.hit_multi_snoops            0                       # Number of snoops hitting in the snoop filter with multiple (>1) holders of the requested data.
