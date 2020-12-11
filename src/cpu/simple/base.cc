@@ -594,6 +594,13 @@ BaseSimpleCPU::postExecute()
         {      
         valueTaken = trueValue == value;
         valuePred->update(curStaticInst, instAddr, prediction, valueTaken, trueValue);
+
+// Uncomment this out if you want to print out the mispredicted instructions and the respective registers
+/* 
+        if (!valueTaken){
+        cout<<"Mispredicted inst:"<<curStaticInst->getName()<<" "<<dest_id<<"\n";
+        }
+*/
         }
         else{
         valuePred->update(curStaticInst, instAddr, prediction, valueTaken, trueValue);
