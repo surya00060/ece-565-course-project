@@ -28,6 +28,15 @@ class SVP(ValuePredictor):
     lastPredictorSize = Param.Unsigned(8192, "Size of SVP predictor")
     lastCtrBits = Param.Unsigned(3, "Bits per counter")
 
+class SVP2D(ValuePredictor):
+    type = 'SVP2D'
+    cxx_class = 'SVP2D'
+    cxx_header = "cpu/vpred/svp2D.hh"
+
+    lastPredictorSize = Param.Unsigned(8192, "Size of SVP predictor")
+    lastCtrBits = Param.Unsigned(3, "Bits per counter")
+    stridehistoryLength = Param.Unsigned(2, "Size of stride history length")
+
 class FCMVP(ValuePredictor):
     type = 'FCMVP'
     cxx_class = 'FCMVP'
