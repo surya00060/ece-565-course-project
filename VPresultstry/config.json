@@ -79,7 +79,7 @@
                 "app_path": "/proc", 
                 "name": "redirect_paths0", 
                 "host_paths": [
-                    "VPresultstry/fs/proc"
+                    "VPresultstry//fs/proc"
                 ], 
                 "eventq_index": 0, 
                 "cxx_class": "RedirectPath", 
@@ -90,7 +90,7 @@
                 "app_path": "/sys", 
                 "name": "redirect_paths1", 
                 "host_paths": [
-                    "VPresultstry/fs/sys"
+                    "VPresultstry//fs/sys"
                 ], 
                 "eventq_index": 0, 
                 "cxx_class": "RedirectPath", 
@@ -101,7 +101,7 @@
                 "app_path": "/tmp", 
                 "name": "redirect_paths2", 
                 "host_paths": [
-                    "VPresultstry/fs/tmp"
+                    "VPresultstry//fs/tmp"
                 ], 
                 "eventq_index": 0, 
                 "cxx_class": "RedirectPath", 
@@ -169,7 +169,7 @@
             "type": "SrcClockDomain", 
             "domain_id": -1
         }, 
-        "mem_mode": "atomic", 
+        "mem_mode": "timing", 
         "name": "system", 
         "init_param": 0, 
         "system_port": {
@@ -268,12 +268,11 @@
                 "power_gating_on_idle": false, 
                 "function_trace": false, 
                 "do_checkpoint_insts": true, 
-                "cxx_class": "AtomicSimpleCPU", 
+                "cxx_class": "TimingSimpleCPU", 
                 "system": "system", 
                 "clk_domain": "system.cpu_clk_domain", 
                 "function_trace_start": 0, 
                 "cpu_id": 0, 
-                "width": 1, 
                 "checker": null, 
                 "eventq_index": 0, 
                 "power_state": {
@@ -294,7 +293,7 @@
                     "leaders": []
                 }, 
                 "do_quiesce": true, 
-                "type": "AtomicSimpleCPU", 
+                "type": "TimingSimpleCPU", 
                 "profile": 0, 
                 "icache_port": {
                     "peer": "system.membus.slave[1]", 
@@ -319,17 +318,18 @@
                 "socket_id": 0, 
                 "power_model": [], 
                 "max_insts_all_threads": 0, 
-                "simulate_data_stalls": false, 
                 "path": "system.cpu", 
                 "pwr_gating_latency": 300, 
                 "valuePred": {
-                    "lastCtrBits": 3, 
                     "name": "valuePred", 
+                    "historyTableSize": 8192, 
+                    "ctrBits": 3, 
+                    "historyLength": 4, 
                     "eventq_index": 0, 
-                    "lastPredictorSize": 8192, 
-                    "cxx_class": "LVP", 
+                    "cxx_class": "FCMVP", 
                     "path": "system.cpu.valuePred", 
-                    "type": "LVP"
+                    "valuePredictorTableSize": 4096, 
+                    "type": "FCMVP"
                 }, 
                 "switched_out": false, 
                 "workload": [
@@ -453,8 +453,7 @@
                     "size": 64
                 }, 
                 "simpoint_start_insts": [], 
-                "max_insts_any_thread": 1000000000, 
-                "simulate_inst_stalls": false, 
+                "max_insts_any_thread": 20000, 
                 "progress_interval": 0, 
                 "branchPred": null, 
                 "isa": [
