@@ -31,11 +31,11 @@ FCMVP::lookup(Addr inst_addr, RegVal &value)
 
     if (prediction)
     {
-        RegVal hashedHistory = valueHistoryTable[indexVHT][0];
+        RegVal hashedHistory = computeHash(valueHistoryTable[indexVHT][0]);
 
         for(int i = 1; i < historyLength; ++i)
         {
-            hashedHistory = hashedHistory ^ ( (unsigned) pow(2,i) * valueHistoryTable[indexVHT][i]);
+            hashedHistory = hashedHistory ^ ( (unsigned) pow(2,i) * computeHash(valueHistoryTable[indexVHT][i]));
         }
         unsigned indexVPT = hashedHistory%valuePredictorTableSize;
         value = valuePredictionTable[indexVPT];
@@ -76,11 +76,11 @@ FCMVP::updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, Reg
 
         // Update History and Tables for tag match case.
         // Add the new data history at historyLength-1. O is the Least recently used.
-        RegVal hashedHistory = valueHistoryTable[indexVHT][0];
+        RegVal hashedHistory = computeHash(valueHistoryTable[indexVHT][0]);
 
         for(int i = 1; i < historyLength; i++)
         {
-            hashedHistory = hashedHistory ^ ((unsigned) pow(2,i) *valueHistoryTable[indexVHT][i]);
+            hashedHistory = hashedHistory ^ ((unsigned) pow(2,i) *computeHash(valueHistoryTable[indexVHT][i]));
             valueHistoryTable[indexVHT][i-1] = valueHistoryTable[indexVHT][i];
         }
 
@@ -94,11 +94,11 @@ FCMVP::updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, Reg
     {
         classificationTable[indexVHT]++;
 
-        RegVal hashedHistory = valueHistoryTable[indexVHT][0];
+        RegVal hashedHistory = computeHash(valueHistoryTable[indexVHT][0]);
 
         for(int i = 1; i < historyLength; i++)
         {
-            hashedHistory = hashedHistory ^ ((unsigned) pow(2,i) *valueHistoryTable[indexVHT][i]);
+            hashedHistory = hashedHistory ^ ((unsigned) pow(2,i) *computeHash(valueHistoryTable[indexVHT][i]));
             valueHistoryTable[indexVHT][i-1] = valueHistoryTable[indexVHT][i];
         }
 
@@ -119,7 +119,7 @@ FCMVP::updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, Reg
             valueHistoryTable[indexVHT][i] = 0;
         }
         valueHistoryTable[indexVHT][historyLength-1] = trueValue;
-        RegVal hashedHistory = trueValue;
+        RegVal hashedHistory = computeHash(trueValue);
 
         unsigned indexVPT = hashedHistory%valuePredictorTableSize;
         valuePredictionTable[indexVPT] = trueValue;

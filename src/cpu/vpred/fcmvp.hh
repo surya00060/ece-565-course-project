@@ -24,6 +24,18 @@ class FCMVP : public VPredUnit
         float getconf(Addr inst_addr, RegVal &value);
 
         void updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVal &trueValue);
+
+        static inline RegVal computeHash(RegVal data)
+        {
+            RegVal hash = 0;
+            RegVal bits = 0;
+            for (int i = 0; i < 8; ++i)
+            {
+                 bits = ((1 << 8) - 1) & (data >> (8*i));
+                 hash = hash ^ bits;
+            }
+            return hash;
+        }
     
     private:
         /*Number of history values to track*/
