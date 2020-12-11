@@ -51,4 +51,4 @@ class BaseSimpleCPU(BaseCPU):
             exit(1)
 
     branchPred = Param.BranchPredictor(NULL, "Branch Predictor")
-    valuePred = Param.ValuePredictor(LVP(), "Value Predictor")
+    valuePred = Param.ValuePredictor(SVP2D(), "Value Predictor")

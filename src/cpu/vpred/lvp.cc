@@ -4,6 +4,7 @@
 // #include "base/logging.hh"
 // #include "base/trace.hh"
 // #include "debug/Fetch.hh"
+#include "iostream"
 
 LVP::LVP(const LVPParams *params)
     : VPredUnit(params),
@@ -28,10 +29,13 @@ LVP::lookup(Addr inst_addr, RegVal &value)
 
     /*Gets the MSB of the count.*/
     //bool prediction = counter_val >> (lastCtrBits-1);
-    bool prediction = ((counter_val == ((2^lastCtrBits)-1)) && (tag==inst_addr));  
+    bool prediction = ((unsigned(counter_val) == (pow(2,lastCtrBits)-1)) && (tag==inst_addr>>(lastCtrBits)));  
+    
+
 
     if (prediction)
-    {
+    {   
+
         value = valuePredictionTable[index];
     }
 
@@ -76,12 +80,12 @@ LVP::updateTable(Addr inst_addr, bool isValuePredicted, bool isValueTaken, RegVa
     {
         /*Increasing the Counter when the Predictor doesn't predict, so that it predicts in next instance.*/
         
-        if (tagTable[index]==inst_addr){
+        if (tagTable[index]==inst_addr>>(lastCtrBits)){
            classificationTable[index]++;
            valuePredictionTable[index] = trueValue;
         }
         else{
-            tagTable[index]=inst_addr;
+            tagTable[index]=inst_addr>>(lastCtrBits);
             classificationTable[index].reset();
             valuePredictionTable[index] = trueValue;
         }
