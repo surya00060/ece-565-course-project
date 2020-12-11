@@ -49,8 +49,6 @@ class SVP2D : public VPredUnit
        /*Array of stride history*/
         std::vector<std::vector<RegVal>> strideHistoryTable;
 
-        /*Array of final Stride*/
-        std::vector<RegVal> finalstridePredictionTable;
         /*Array of tag value*/
         std::vector<Addr> tagTable;
 

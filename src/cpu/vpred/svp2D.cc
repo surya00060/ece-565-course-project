@@ -11,7 +11,6 @@ SVP2D::SVP2D(const SVP2DParams *params)
       valuePredictionTable(lastPredictorSize),
       stridePredictionTable(lastPredictorSize),
       strideHistoryTable(lastPredictorSize, std::vector<RegVal> (params->stridehistoryLength)),
-      finalstridePredictionTable(lastPredictorSize),      
       tagTable(lastPredictorSize)
 {
     // valuePredictionTable.resize(lastPredictorSize);
@@ -34,7 +33,7 @@ SVP2D::lookup(Addr inst_addr, RegVal &value)
     if (prediction)
     {
         value = valuePredictionTable[index];
-        RegVal stride = finalstridePredictionTable[index];
+        RegVal stride = stridePredictionTable[index];
         value += stride;
     }
 
